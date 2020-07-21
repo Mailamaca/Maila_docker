@@ -20,6 +20,5 @@ RUN /scripts/install_main.sh
 # ssh, database and apex port
 EXPOSE 22 1521 8080
 
-# launch ros package
-CMD ["ros2", "launch", "demo_nodes_cpp", "talker_listener.launch.py"]
-
+# entrypoint for database creation, startup and graceful shutdown
+ENTRYPOINT ["/scripts/entrypoint.sh"]

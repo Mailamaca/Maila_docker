@@ -6,6 +6,7 @@
 To ensure a common, consistent development environment we develop a docker image to run all the packages required from the *Maila* project.
 
 ## Content
+
 This Docker Image contains the following:
 
 * ROS2 Foxy Fitzroy
@@ -13,35 +14,37 @@ This Docker Image contains the following:
 
 ## Installation
 
-### Intalling docker
+To get started, follow these steps:
 
-1. Install docker from apt
+### 1 Install docker
+Install and configure [Docker](https://www.docker.com/get-started) for your operating system.
 
-```bash
-sudo apt update
-sudo apt install docker.io
-```
+##### Windows
 
-2. Enable docker service
+1. Install [Docker Desktop for Windows/Mac](https://www.docker.com/products/docker-desktop).
 
-```bash
-sudo systemctl enable docker
-```
+2. Right-click on the Docker task bar item, select **Settings/Preferences** and update **Resources > File Sharing** with any locations your source code is kept. See [tips and tricks](https://code.visualstudio.com/docs/remote/troubleshooting#_container-tips) for troubleshooting.
 
-3. Reboot or start manually docker
+3. If you are using WSL 2 on Windows, to enable the [Windows WSL 2 back-end](https://aka.ms/vscode-remote/containers/docker-wsl2): Right-click on the Docker taskbar item and select **Settings**. Check **Use the WSL 2 based engine** and verify your distribution is enabled under **Resources > WSL Integration**.
 
-```bash
-sudo systemctl start docker
-```
+##### Linux
 
-4. Create a docker group and append the current user to avoid use sudo when runnin docker cmds
+1. Follow the [official install instructions for Docker CE/EE for your distribution](https://docs.docker.com/install/#supported-platforms). If you are using Docker Compose, follow the Docker Compose directions as well.
 
+2. Add your user to the **docker** group by using a terminal to run: `sudo usermod -aG docker $USER`
 ```bash
 sudo groupadd docker
 sudo usermod -aG docker $USER
 ```
 
-### Using Default Settings (recommended)
+3. Sign out and back in again so your changes take effect.
+
+### 2 Install Visaul Studio code
+1 - Install [Visual Studio Code](https://code.visualstudio.com/) or [Visual Studio Code Insiders](https://code.visualstudio.com/insiders/).
+
+2 - Install the [Remote Development extension pack](https://aka.ms/vscode-remote/download/extension).
+
+## Settings (recommended)
 
 Complete the following steps to create a new container:
 
@@ -139,7 +142,7 @@ competent_feynman
 ## Credits
 This Dockerfile is based on the following work:
 
--  Daniel Hochleitner's GitHub Project [ Dani3lSun/docker-db-apex-dev](https://github.com/Dani3lSun/docker-db-apex-dev/blob/master/README.md)
+-  Daniel Hochleitner's GitHub Project [ Dani3lSun/docker-db-apex-dev](https://github.com/Dani3lSun/docker-db-apex-dev)
 
 ## License
 

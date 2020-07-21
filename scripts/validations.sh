@@ -1,6 +1,10 @@
 #!/bin/bash
 
 echo "......Checking Scripts......"
+if [ ! -f /scripts/entrypoint.sh ]; then
+    echo "/scripts/entrypoint.sh not found!"
+    exit 1
+fi
 if [ ! -f /scripts/image_setup.sh ]; then
     echo "/scripts/image_setup.sh not found!"
     exit 1
