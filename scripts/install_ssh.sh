@@ -1,34 +1,19 @@
 #!/bin/bash
 
-# install openssh
-yum install -y openssh-server
+if ZA_USESSH; then
 
-# set root password
-echo 'root:'${PASS} | chpasswd
-# generate ssh keys
-ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
-ssh-keygen -f /etc/ssh/ssh_host_ecdsa_key -N '' -t ecdsa
-ssh-keygen -f /etc/ssh/ssh_host_ed25519_key -N '' -t ed25519
+    # install openssh
+    apt-get update
+    apt-get install -y openssh-server
+    mkdir /var/run/sshd
 
-# SSH login fix. Otherwise user is kicked off after login
-echo "export VISIBLE=now" >> /etc/profile
-sed -i 's/UsePAM yes/UsePAM no/' /etc/ssh/sshd_config
+    # SSH login fix. Otherwise user is kicked off after login
+    sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+    sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
 
-# copy keys-file, so that we can later ssh without password
-if [ -f /files/authorized_keys ]; then
-    sed -i 's/#PermitRootLogin yes/PermitRootLogin without-password/' /etc/ssh/sshd_config
-    sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-    sed -i 's/#RSAAuthentication yes/RSAAuthentication yes/' /etc/ssh/sshd_config
-    sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
     # set authorized_keys file root
     mkdir /root/.ssh/
-    cp /files/authorized_keys /root/.ssh/
-    restorecon -r -vv  /root/.ssh
-    chmod 600 /root/.ssh/authorized_keys
-    # set authorized_keys file oracle
-    mkdir /home/oracle/.ssh/
-    cp /files/authorized_keys /home/oracle/.ssh/
-    chown -R oracle:oinstall /home/oracle/.ssh/
-    restorecon -r -vv  /home/oracle/.ssh
-    chmod 600 /home/oracle/.ssh/authorized_keys
+    apt-get clean
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 fi

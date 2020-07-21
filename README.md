@@ -9,6 +9,7 @@ To ensure a common, consistent development environment we develop a docker image
 
 This Docker Image contains the following:
 
+* Ubuntu Focal Fossa 20.04
 * ROS2 Foxy Fitzroy
 * ...
 
@@ -50,47 +51,65 @@ Complete the following steps to create a new container:
 
 1. **Clone or Download the Github Repository to your local Machine**
 
-```bash
-git clone https://github.com/Mailamaca/Maila_docker.git
-```
+    ```bash
+    git clone https://github.com/Mailamaca/Maila_docker.git
+    ```
 
-2. **Customize some settings to reflect your needs (optional)**
-You can change some Environment Variables directly in the [Dockerfile](https://github.com/Mailamaca/Maila_docker/blob/master/Dockerfile):
+1. **Customize some settings to reflect your needs (optional)**
+    You can change some Environment Variables directly in the [Dockerfile](https://github.com/Mailamaca/Maila_docker/blob/master/Dockerfile):
 
-3. **Build the Docker Image**
+1. **Build the Docker Image**
 
-```bash
-cd /path/to/Maila_docker
-docker build -t <your-docker-image-name> .
-# e.g
-docker build -t maila-image .
-```
+    ```bash
+    cd /path/to/Maila_docker
+    docker build -t <your-docker-image-name> .
+    # e.g
+    cd Maila_docker
+    docker build -t maila-image .
+    ```
 
-*Note: Please be sure to have enough disk space left. Building this image needs around xxxGB of free space. The successfully built image has a size of xxxGB*
+    *Note: Please be sure to have enough disk space left. Building this image needs around 2GB of free space. The successfully built image has a size of 2GB*
 
-5. **Run the Docker Container**
+1. **Create Docker Container**
+   - `--name` sets the name of the container
+   - `--h` sets the hostname of the container
+   - `-it` sets it as interactable and using stdin and stdout
+   - `--env DISPLAY=$DISPLAY` sets an environment var for GUI
+   - `-v /tmp/.X11-unix:/tmp/.X11-unix` sets a volume to share the x server
+   - `-p` sets a port forwarding
 
-```bash
-docker run -d --name <your-docker-container-name> -p 2222:22 -p 8080:8080 -p 1521:1521 <your-docker-image-name>
-# e.g
-docker run -d --name maila-container -p 2222:22 -p 8080:8080 -p 1521:1521 maila-image
-```
+    ``` bash
+    docker create -it --name maila-container -h maila -v /tmp/.X11-unix:/tmp/.X11-unix --env DISPLAY=$DISPLAY -p 2222:22 maila-image
+    ```
 
-6. **Start/Stop of Docker Container**
+1. **Start/Stop of Docker Container**
 
-```bash
-docker start -ia <your-docker-container-name>
-docker stop <your-docker-container-name>
-# e.g
-docker start -ia maila-container
-docker stop maila-container
-```
+    ```bash
+    docker start -ia <your-docker-container-name>
+    docker stop <your-docker-container-name>
+    # e.g
+    docker start -ia maila-container
+    docker stop maila-container
+    ```
 
-## Access To Services
-**docker run -d --name db-apex-dev-container -p 2222:22 -p 8080:8080 -p 1521:1521 -v /dev/shm --tmpfs /dev/shm:rw,nosuid,nodev,exec,size=2g db-apex-dev-image**
+1. **Open a new terminal connected to the container (AS USER)**
+
+    ``` bash
+    docker exec -it maila-container bash
+    ```
+
+1. **Open a new terminal connected to the container (AS ROOT)**
+
+    ``` bash
+    docker exec -u 0 -it maila-container bash
+    ```
+
+
 
 
 ### SSH
+
+**TODO**
 
 To access the Docker Container via SSH: ```ssh root@localhost -p 2222```
 
@@ -99,9 +118,65 @@ User | Password
 root | oracle
 oracle | oracle
 
-**TODO: fixx table!**
+
 
 ## Docker useful commands
+
+#### Remove container
+
+1. Get all containers
+
+   ``` bash
+   docker ps -a
+   ```
+
+2. Delete ones
+
+   ``` bash
+   docker rm maila
+   ```
+
+#### Remove docker image
+
+1. Get all images
+
+   ``` bash
+   docker images
+   ```
+
+2. Delete ones
+
+   ``` bash
+   docker rmi 27aba35ee129
+   ```
+
+#### Backup container state (NOT THE DATA VOLUME)
+
+1. Create a backup of the container to an image. 
+
+   ``` bash
+   docker commit -p maila maila/backup:20200720
+   ```
+
+   Kindly note that this will not cover the data volume. You need to take the backup of data-volume (if any) separately. To know this data-directory (data volume location) of a container, use the command `docker inspect container-name`. You will get a section called “Mounts”. Location mentioned in “Source” is the data volume. You may directly backup this folder(here /site) to get backup of data volume.
+
+2. Save image as a tar file
+
+   ``` bash
+   docker save -o maila_backup_20200720.tar maila/backup:20200720
+   ```
+
+#### Restore container backup (NOT THE DATA VOLUME)
+
+1. Image can be extracted from backup tar file using the following command
+
+   ``` bash
+   docker load -i /tmp/backup01.tar
+   ```
+
+2. You can create container from this image using “docker create“. If you had data volume on the original container. You must restore the data volume too and run container with the data volume (docker create -v)
+
+
 
 #### Check the version of Docker installed on your machine
 
@@ -134,10 +209,17 @@ If it is still running, you do not need the **--all** option
     42f7c2645a99        ros:foxy            "/ros_entrypoint.sh …"   16 minutes ago      Up 15 minutes                                  competent_feynman
 </code>
 
-#### Stop a running istance:
-<code>    <span class="nv">$ </span>docker stop competent_feynman<span class="nt">--all</span>
-competent_feynman
-</code>
+## ROS2 turtlesim example
+
+``` bash
+source /opt/ros/foxy/setup.bash
+printenv | grep -i ROS
+apt update
+apt install ros-foxy-turtlesim
+ros2 pkg executables turtlesim
+ros2 run turtlesim turtlesim_node
+ros2 run turtlesim turtle_teleop_key
+```
 
 ## Credits
 This Dockerfile is based on the following work:
