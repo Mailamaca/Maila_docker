@@ -17,28 +17,21 @@ RUN echo 'user:user' |chpasswd
 # timezone
 RUN ln -s -f /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime
 
-# copy all scripts
+# copy all scripts and files
 ADD scripts /scripts/
 ADD files /files/
 
-# # SSH
-# RUN /scripts/install_ssh.sh
-# EXPOSE 22
-# CMD ["/usr/sbin/sshd", "-D"]
+# image setup via shell script to reduce layers and optimize final disk usage
+RUN /scripts/install_main.sh
 
-
-
-# # ROS
-# # RUN /scripts/install_ros.sh
 
 USER user
 WORKDIR /home/user
 
-# setup ROS2 environment
-#RUN "source /opt/ros/foxy/setup.bash" DO NOT WORK
-
 # NOTE:
 # if run with ssh remove comment 'USER user' and, at the end add 'CMD ["/usr/sbin/sshd", "-D"]'
 
+# entrypoint where ros env is loaded
+# ENTRYPOINT ["/scripts/entrypoint.sh"]
 
 

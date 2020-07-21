@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ZA_USESSH; then
+if [ $ZA_USESSH ]; then
 
     # install openssh
     apt-get update
@@ -15,5 +15,6 @@ if ZA_USESSH; then
     mkdir /root/.ssh/
     apt-get clean
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
+else
+    echo "SSH NOT INSTALLED"
 fi

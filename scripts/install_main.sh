@@ -3,7 +3,7 @@
 echo "--------------------------------------------------"
 echo "Environment Vars.................................."
 echo "TIME_ZONE: ${TIME_ZONE}"
-echo "TMP_REMOVE_ME_TEST: ${TMP_REMOVE_ME_TEST}"
+echo "ZA_USESSH: ${ZA_USESSH}"
 #
 #
 echo "--------------------------------------------------"
@@ -19,12 +19,16 @@ echo "Installing SSH...................................."
 ./scripts/install_ssh.sh
 #
 echo "--------------------------------------------------"
+echo "Installing APT PKGS..............................."
+./scripts/install_apt.sh
+#
+echo "--------------------------------------------------"
 echo "Installing ROS PKGS..............................."
 ./scripts/install_ros.sh
 #
 echo "--------------------------------------------------"
 echo "Cleanup..........................................."
-yum clean all
+#yum clean all
 rm -r -f /tmp/*
 rm -r -f /files/*
 rm -r -f /var/tmp/*

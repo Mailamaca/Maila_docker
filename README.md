@@ -115,8 +115,8 @@ To access the Docker Container via SSH: ```ssh root@localhost -p 2222```
 
 User | Password
 -------- | -----
-root | oracle
-oracle | oracle
+root | root
+user | user
 
 
 
