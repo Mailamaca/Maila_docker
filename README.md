@@ -5,8 +5,6 @@
 
 To ensure a common, consistent development environment we develop a docker image to run all the packages required from the *Maila* project.
 
-The requirement for this  is to install docker, please follow: https://www.docker.com/get-started.
-
 ## Content
 This Docker Image contains the following:
 
@@ -14,6 +12,34 @@ This Docker Image contains the following:
 * ...
 
 ## Installation
+
+### Intalling docker
+
+1. Install docker from apt
+
+```bash
+sudo apt update
+sudo apt install docker.io
+```
+
+2. Enable docker service
+
+```bash
+sudo systemctl enable docker
+```
+
+3. Reboot or start manually docker
+
+```bash
+sudo systemctl start docker
+```
+
+4. Create a docker group and append the current user to avoid use sudo when runnin docker cmds
+
+```bash
+sudo groupadd docker
+sudo usermod -aG docker $USER
+```
 
 ### Using Default Settings (recommended)
 
@@ -25,8 +51,52 @@ Complete the following steps to create a new container:
 git clone https://github.com/Mailamaca/Maila_docker.git
 ```
 
+2. **Customize some settings to reflect your needs (optional)**
+You can change some Environment Variables directly in the [Dockerfile](https://github.com/Mailamaca/Maila_docker/blob/master/Dockerfile):
 
-2) asdfa
+3. **Build the Docker Image**
+
+```bash
+cd /path/to/Maila_docker
+docker build -t <your-docker-image-name> .
+# e.g
+docker build -t maila-image .
+```
+
+*Note: Please be sure to have enough disk space left. Building this image needs around xxxGB of free space. The successfully built image has a size of xxxGB*
+
+5. **Run the Docker Container**
+
+```bash
+docker run -d --name <your-docker-container-name> -p 2222:22 -p 8080:8080 -p 1521:1521 <your-docker-image-name>
+# e.g
+docker run -d --name maila-container -p 2222:22 -p 8080:8080 -p 1521:1521 maila-image
+```
+
+6. **Start/Stop of Docker Container**
+
+```bash
+docker start -ia <your-docker-container-name>
+docker stop <your-docker-container-name>
+# e.g
+docker start -ia maila-container
+docker stop maila-container
+```
+
+## Access To Services
+**docker run -d --name db-apex-dev-container -p 2222:22 -p 8080:8080 -p 1521:1521 -v /dev/shm --tmpfs /dev/shm:rw,nosuid,nodev,exec,size=2g db-apex-dev-image**
+
+
+### SSH
+
+To access the Docker Container via SSH: ```ssh root@localhost -p 2222```
+
+User | Password
+-------- | -----
+root | oracle
+oracle | oracle
+
+**TODO: fixx table!**
 
 ## Docker useful commands
 
@@ -65,3 +135,14 @@ If it is still running, you do not need the **--all** option
 <code>    <span class="nv">$ </span>docker stop competent_feynman<span class="nt">--all</span>
 competent_feynman
 </code>
+
+## Credits
+This Dockerfile is based on the following work:
+
+-  Daniel Hochleitner's GitHub Project [ Dani3lSun/docker-db-apex-dev](https://github.com/Dani3lSun/docker-db-apex-dev/blob/master/README.md)
+
+## License
+
+MIT
+
+See [Oracle Database Licensing Information User Manual](https://docs.oracle.com/database/122/DBLIC/Licensing-Information.htm#DBLIC-GUID-B6113390-9586-46D7-9008-DCC9EDA45AB4) regarding Oracle Database licenses.
