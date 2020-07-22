@@ -1,4 +1,5 @@
 #!/bin/bash
+#set -x #echo on
 
 # add hostname
 echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts

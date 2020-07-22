@@ -1,6 +1,7 @@
 #!/bin/bash
+#set -x #echo on
 
-if [ $ZA_USESSH ]; then
+if [ $ZA_USESSH != 0 ]; then
 
     # install openssh
     apt-get update

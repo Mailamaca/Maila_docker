@@ -70,35 +70,38 @@ Complete the following steps to create a new container:
 
     *Note: Please be sure to have enough disk space left. Building this image needs around 2GB of free space. The successfully built image has a size of 2GB*
 
-1. **Create Docker Container**
+1. **Run (create+start) Docker Container**
+   
+   
+   - `--rm` Automatically remove the container when it exits
+   - `-it` sets it as interactable and using stdin and stdout
    - `--name` sets the name of the container
    - `--h` sets the hostname of the container
-   - `-it` sets it as interactable and using stdin and stdout
-   - `--env DISPLAY=$DISPLAY` sets an environment var for GUI
+   - `--mount` mount a volume, src=host/path, dst=container/path
    - `-v /tmp/.X11-unix:/tmp/.X11-unix` sets a volume to share the x server
-   - `-p` sets a port forwarding
+   - `--env DISPLAY=$DISPLAY` sets an environment var for GUI
+   - `-p` sets a port forwarding (for SSH e.g)
 
     ``` bash
-    docker create -it --name maila-container -h maila -v /tmp/.X11-unix:/tmp/.X11-unix --env DISPLAY=$DISPLAY -p 2222:22 maila-image
+    docker run --rm -it \
+        --name maila-container -h maila \
+        --user "$(id -u):$(id -g)" \
+        --mount type=bind,src="$PWD"/../,dst=/mailamaca \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        --env DISPLAY=$DISPLAY \
+        -p 2222:22 \
+        maila-image
     ```
 
-1. **Start/Stop of Docker Container**
+    this will be the main terminal windows, when this closes the container colses and all things made in it will be lost!
 
-    ```bash
-    docker start -ia <your-docker-container-name>
-    docker stop <your-docker-container-name>
-    # e.g
-    docker start -ia maila-container
-    docker stop maila-container
-    ```
-
-1. **Open a new terminal connected to the container (AS USER)**
+2. **Open a new terminal connected to the container (AS USER)**
 
     ``` bash
     docker exec -it maila-container bash
     ```
 
-1. **Open a new terminal connected to the container (AS ROOT)**
+3. **Open a new terminal connected to the container (AS ROOT)**
 
     ``` bash
     docker exec -u 0 -it maila-container bash
@@ -149,6 +152,17 @@ user | user
    ``` bash
    docker rmi 27aba35ee129
    ```
+
+#### Start/Stop of Docker Container
+
+    ```bash
+    docker start -ia <your-docker-container-name>
+    docker stop <your-docker-container-name>
+    # e.g
+    docker start -ia maila-container
+    docker stop maila-container
+    ```
+
 
 #### Backup container state (NOT THE DATA VOLUME)
 
@@ -225,6 +239,8 @@ ros2 run turtlesim turtle_teleop_key
 This Dockerfile is based on the following work:
 
 -  Daniel Hochleitner's GitHub Project [ Dani3lSun/docker-db-apex-dev](https://github.com/Dani3lSun/docker-db-apex-dev)
+
+- https://tuw-cpsg.github.io/tutorials/docker-ros/
 
 ## License
 
