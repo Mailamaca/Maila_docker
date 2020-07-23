@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "ENTRYPOINT!"
+#echo "ENTRYPOINT!"
 
 ## setup ros2 environment
 #source "/opt/ros/$ROS_DISTRO/setup.bash"

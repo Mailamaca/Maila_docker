@@ -153,6 +153,12 @@ user | user
    docker rmi 27aba35ee129
    ```
 
+3. Delete dangling images (https://www.projectatomic.io/blog/2015/07/what-are-docker-none-none-images/)
+
+   ``` bash
+   docker rmi $(docker images -f "dangling=true" -q)
+   ```
+
 #### Start/Stop of Docker Container
 
     ```bash
