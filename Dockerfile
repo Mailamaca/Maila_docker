@@ -5,7 +5,6 @@ MAINTAINER Valerio Magnago <valerio.magnago@gmail.com>
 
 # environment variables
 ENV TIME_ZONE=UTC
-ENV ZA_USESSH=0
 
 # set root password
 RUN echo 'root:root' |chpasswd
@@ -28,6 +27,7 @@ RUN /dockerScripts/image_setup.sh
 # install ssh deamon
 COPY scripts/install_ssh.sh /dockerScripts/install_ssh.sh
 RUN /dockerScripts/install_ssh.sh
+EXPOSE 22
 
 # install APT pkgs
 COPY scripts/install_apt.sh /dockerScripts/install_apt.sh
@@ -41,16 +41,10 @@ RUN /dockerScripts/install_ros.sh
 COPY scripts/cleanup.sh /dockerScripts/cleanup.sh
 RUN /dockerScripts/cleanup.sh
 
-
 # entrypoint
 USER snail
 COPY scripts/entrypoint.sh /dockerScripts/entrypoint.sh
 ENTRYPOINT ["/dockerScripts/entrypoint.sh"]
 CMD ["bash"]
-
-
-# NOTE:
-# if run with ssh remove comment 'USER user' and, at the end add 'CMD ["/usr/sbin/sshd", "-D"]'
-
 
 

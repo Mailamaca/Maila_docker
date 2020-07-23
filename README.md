@@ -110,17 +110,31 @@ Complete the following steps to create a new container:
 
 
 
-### SSH
+## SSH
 
-**TODO**
+1. **With the container started open a new terminal connected to the container (AS ROOT)**
 
-To access the Docker Container via SSH: ```ssh root@localhost -p 2222```
+    ``` bash
+    docker exec -u 0 -it maila-container /usr/sbin/sshd -d
+    ```
 
-User | Password
--------- | -----
-root | root
-user | user
+2. Access the Docker Container via SSH (in another host terminal):
 
+    ```bash
+    ssh root@localhost -p 2222
+    ```
+
+    User | Password
+    -------- | -----
+    root | root
+
+3. if HOST IDENTIIFATION HAS CHANGED try this command
+   
+   ```bash
+    ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R "[localhost]:2222"
+    ```
+
+    then re-launch the ssh service in the previuous terminal and then re-try to login
 
 
 ## Docker useful commands
