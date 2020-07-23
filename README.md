@@ -82,6 +82,19 @@ Complete the following steps to create a new container:
    - `--env DISPLAY=$DISPLAY` sets an environment var for GUI
    - `-p` sets a port forwarding (for SSH e.g)
 
+    Start as root:
+    ``` bash
+    docker run --rm -it \
+        --name maila-container -h maila \
+        --user 0 \
+        --mount type=bind,src="$PWD"/../,dst=/mailamaca \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        --env DISPLAY=$DISPLAY \
+        -p 2222:22 \
+        maila-image
+    ```
+
+    Start as user:
     ``` bash
     docker run --rm -it \
         --name maila-container -h maila \
