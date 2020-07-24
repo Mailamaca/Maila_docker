@@ -11,7 +11,7 @@ RUN echo 'root:root' |chpasswd
 
 # create std user named snail
 RUN useradd --create-home -ms /bin/bash snail
-RUN echo 'snail:snail' |chpasswd
+RUN echo 'snail:snail' |chpasswd && adduser snail sudo
 
 # timezone
 RUN ln -s -f /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime
