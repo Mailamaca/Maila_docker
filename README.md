@@ -120,8 +120,17 @@ Complete the following steps to create a new container:
     docker exec -u 0 -it maila-container bash
     ```
 
+## Visual Studio Code Remote extension
 
+1. **Install ms-vscode-remote.remote-containers**
 
+2. In the VSC console (F1) type "Remote-Containers: Open Folder in COntainer..." or click in the green square in the left-bottom part of VSC and select "Remote-Containers: Open Folder in COntainer..."
+
+3. Select Maila_docker folder
+
+4. Done! It will open the up-folder of Maila_docker inside the container
+
+NOTE: the ```.devcontainer.json``` file contains all the information, it is quite the same as ```docker run``` 
 
 ## SSH
 
@@ -131,7 +140,7 @@ Complete the following steps to create a new container:
     docker exec -u 0 -it maila-container /usr/sbin/sshd -d
     ```
 
-2. Access the Docker Container via SSH (in another host terminal):
+2. **Access the Docker Container via SSH (in another host terminal):**
 
     ```bash
     ssh root@localhost -p 2222
@@ -141,7 +150,7 @@ Complete the following steps to create a new container:
     -------- | -----
     root | root
 
-3. if HOST IDENTIIFATION HAS CHANGED try this command
+3. **if HOST IDENTIIFATION HAS CHANGED try this command**
    
    ```bash
     ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R "[localhost]:2222"
