@@ -5,4 +5,6 @@
 apt-get update && apt-get install -y \
 	nano 
 
-# TODO: add more!
+# Clang¶
+sudo apt install clang
+
