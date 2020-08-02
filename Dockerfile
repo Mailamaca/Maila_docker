@@ -1,50 +1,72 @@
 FROM amd64/ros:foxy-ros-base-focal
 
-MAINTAINER Paolo Tomasin <pooltomasin@hotmail.com>
-MAINTAINER Valerio Magnago <valerio.magnago@gmail.com>
+LABEL mantainer="Paolo Tomasin <pooltomasin@hotmail.com>"
+LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
 
-# environment variables
-ENV TIME_ZONE=UTC
+# run as root, let the entrypoint drop back to snail user
+USER root
 
-# set root password
-RUN echo 'root:root' |chpasswd
+# setup environment
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+ENV ROS_DISTRO foxy
+
+# apt update
+RUN apt-get -qq update && apt-get -q -y install
+
+# install packages
+RUN apt-get install -qq -y \
+    openssh-server \
+    lsb-release \
+    dirmngr \
+    gnupg2 \
+    clang \
+    nano \
+    curl
+
+# synth-shell
+# https://github.com/andresgongora/synth-shell
+RUN apt-get -qq -y install fonts-powerline
+
+# Install ros2 pkg
+RUN apt-get install -qq -y \
+	ros-${ROS_DISTRO}-demo-nodes-cpp \
+	ros-${ROS_DISTRO}-demo-nodes-py \
+	ros-${ROS_DISTRO}-turtlesim
+
+# setup ssh
+RUN mkdir /var/run/sshd && \
+    sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
+
+
+# add hostname
+RUN echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
+RUN echo "::1         localhost localhost.localdomain localhost6 localhost6.localdomain6" >> /etc/hosts
+RUN echo "127.0.0.1   $HOSTNAME" >> /etc/hosts
 
 # create std user named snail
 RUN useradd --create-home -ms /bin/bash snail
-RUN echo 'snail:snail' |chpasswd && adduser snail sudo
 
-# timezone
-RUN ln -s -f /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime
+# entrypoint is used to update uid/gid and then run the users command
+COPY scripts/entrypoint.sh /entrypoint.sh
+COPY scripts/synth-shell/.bashrc /home/snail
+COPY scripts/synth-shell/config /home/snail/.config/synth-shell
 
-# create a local folder to store some files useful when building docker image
-RUN mkdir /dockerScripts && chmod -R 777 /dockerScripts
-RUN mkdir /dockerFiles && chmod -R 777 /dockerFiles
+# set user passwords
+RUN echo 'root:root' |chpasswd
+RUN echo 'snail:snail' |chpasswd
 
-# image setup via shell script to reduce layers and optimize final disk usage
-COPY scripts/image_setup.sh /dockerScripts/image_setup.sh
-RUN /dockerScripts/image_setup.sh
+# Cleanup
+RUN apt-get -qq clean all && \
+    rm -r -f /tmp/* && \
+    rm -r -f /dockerFiles/* && \
+    rm -r -f /var/tmp/* && \
+    rm -r -f /var/lib/apt/lists/*
 
-# install ssh deamon
-COPY scripts/install_ssh.sh /dockerScripts/install_ssh.sh
-RUN /dockerScripts/install_ssh.sh
-EXPOSE 22
-
-# install APT pkgs
-COPY scripts/install_apt.sh /dockerScripts/install_apt.sh
-RUN /dockerScripts/install_apt.sh
-
-# install ROS pkgs
-COPY scripts/install_ros.sh /dockerScripts/install_ros.sh
-RUN /dockerScripts/install_ros.sh
-
-# cleanup apt cache
-COPY scripts/cleanup.sh /dockerScripts/cleanup.sh
-RUN /dockerScripts/cleanup.sh
-
-# entrypoint
-USER snail
-COPY scripts/entrypoint.sh /dockerScripts/entrypoint.sh
-ENTRYPOINT ["/dockerScripts/entrypoint.sh"]
+#ENTRYPOINT ["/entrypoint.sh"]
+WORKDIR /home/snail
 CMD ["bash"]
+
 
 
