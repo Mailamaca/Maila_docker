@@ -52,6 +52,7 @@ RUN echo "127.0.0.1   $HOSTNAME" >> /etc/hosts
 
 # create std user named snail
 RUN useradd --create-home -ms /bin/bash snail
+RUN usermod -aG sudo snail
 
 # entrypoint is used to update uid/gid and then run the users command
 COPY scripts/entrypoint.sh /entrypoint.sh
