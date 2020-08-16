@@ -25,7 +25,9 @@ RUN apt-get update && apt-get install -y \
     libgps-dev \
     gpsd \
     gpsd-clients \
-    fonts-powerline
+    fonts-powerline \
+    libbluetooth-dev
+    
 
 # Install ros2 pkg
 RUN apt-get update && apt-get install -y \
