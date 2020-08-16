@@ -27,7 +27,7 @@ RUN apt-get install -qq -y \
     libwiringpi-dev \
     libgps-dev \
     gpsd \
-    gpsd-client
+    gpsd-clients
 
 # synth-shell
 # https://github.com/andresgongora/synth-shell
