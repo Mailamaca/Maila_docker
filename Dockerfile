@@ -11,11 +11,8 @@ ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 ENV ROS_DISTRO foxy
 
-# apt update
-RUN apt-get update
-
 # install packages
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
     openssh-server \
     lsb-release \
     dirmngr \
@@ -27,14 +24,11 @@ RUN apt-get install -y \
     libwiringpi-dev \
     libgps-dev \
     gpsd \
-    gpsd-clients
-
-# synth-shell
-# https://github.com/andresgongora/synth-shell
-RUN apt-get -qq -y install fonts-powerline
+    gpsd-clients \
+    fonts-powerline
 
 # Install ros2 pkg
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-demo-nodes-cpp \
     ros-${ROS_DISTRO}-demo-nodes-py \
     ros-${ROS_DISTRO}-diagnostic-msgs \
