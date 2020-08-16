@@ -12,10 +12,10 @@ ENV LC_ALL C.UTF-8
 ENV ROS_DISTRO foxy
 
 # apt update
-RUN apt-get -qq update && apt-get -q -y install
+RUN apt-get update
 
 # install packages
-RUN apt-get install -qq -y \
+RUN apt-get install -y \
     openssh-server \
     lsb-release \
     dirmngr \
@@ -34,13 +34,13 @@ RUN apt-get install -qq -y \
 RUN apt-get -qq -y install fonts-powerline
 
 # Install ros2 pkg
-RUN apt-get install -qq -y \
-	ros-${ROS_DISTRO}-demo-nodes-cpp \
-	ros-${ROS_DISTRO}-demo-nodes-py \
+RUN apt-get install -y \
+    ros-${ROS_DISTRO}-demo-nodes-cpp \
+    ros-${ROS_DISTRO}-demo-nodes-py \
     ros-${ROS_DISTRO}-diagnostic-msgs \
-	ros-${ROS_DISTRO}-diagnostic-updater \
-	ros-${ROS_DISTRO}-diagnostic-aggregator \
-	ros-${ROS_DISTRO}-turtlesim
+    ros-${ROS_DISTRO}-diagnostic-updater \
+    ros-${ROS_DISTRO}-diagnostic-aggregator \
+    ros-${ROS_DISTRO}-turtlesim
     
 
 # setup ssh
