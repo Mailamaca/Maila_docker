@@ -22,7 +22,12 @@ RUN apt-get install -qq -y \
     gnupg2 \
     clang \
     nano \
-    curl
+    curl \
+    libasio-dev \
+    libwiringpi-dev \
+    libgps-dev \
+    gpsd \
+    gpsd-client
 
 # synth-shell
 # https://github.com/andresgongora/synth-shell
@@ -32,7 +37,11 @@ RUN apt-get -qq -y install fonts-powerline
 RUN apt-get install -qq -y \
 	ros-${ROS_DISTRO}-demo-nodes-cpp \
 	ros-${ROS_DISTRO}-demo-nodes-py \
+    ros-${ROS_DISTRO}-diagnostic-msgs \
+	ros-${ROS_DISTRO}-diagnostic-updater \
+	ros-${ROS_DISTRO}-diagnostic-aggregator \
 	ros-${ROS_DISTRO}-turtlesim
+    
 
 # setup ssh
 RUN mkdir /var/run/sshd && \
