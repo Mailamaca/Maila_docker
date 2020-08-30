@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
     gpsd \
     gpsd-clients \
     fonts-powerline \
-    libbluetooth-dev
+    libbluetooth-dev 
     
 
 # Install ros2 pkg
@@ -38,6 +38,11 @@ RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-diagnostic-aggregator \
     ros-${ROS_DISTRO}-turtlesim
     
+# Tool to format the code
+RUN apt-get update && apt-get install -y \
+    ros-${ROS_DISTRO}-ament-clang-format \
+    ros-${ROS_DISTRO}-ament-cmake-clang-format 
+
 
 # setup ssh
 RUN mkdir /var/run/sshd && \
