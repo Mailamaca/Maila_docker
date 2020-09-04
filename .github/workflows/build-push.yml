@@ -17,15 +17,46 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Runs a single command using the runners shell
       - name: Checkout code
         uses: actions/checkout@v2
 
-    # Runs a single command using the runners shell
-      - name: Build and push Docker images
+      # Build the ros2 docker image
+      - name: Build and push ubuntu-focal-ros2-foxy
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: maila/maila_dev
+          path: ./ubuntu-focal-ros2-foxy/
+          repository: maila/ubuntu-focal-ros2-foxy
+          tags: latest
+
+      # Runs a single command using the runners shell
+      - name: Build and push maila-dev
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          path: ./maila-dev/
+          repository: maila/maila-dev
+          tags: latest
+
+      # Runs a single command using the runners shell
+      - name: Build and push ubuntu-focal-ros2-foxy-unity3d
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          path: ./ubuntu-focal-ros2-foxy-unity3d/
+          repository: maila/ubuntu-focal-ros2-foxy-unity3d
+          tags: latest
+
+      # Runs a single command using the runners shell
+      - name: Build and push maila-sim
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          path: ./maila-sim/
+          repository: maila/maila-sim
           tags: latest
