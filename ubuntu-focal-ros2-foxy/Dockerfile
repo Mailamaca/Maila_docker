@@ -41,19 +41,7 @@ RUN apt-get update -qq && apt-get install -qq -y \
   iputils-ping \
   xz-utils \
   openssh-server
-  
-# add hostname
-RUN echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
-RUN echo "::1         localhost localhost.localdomain localhost6 localhost6.localdomain6" >> /etc/hosts
-RUN echo "127.0.0.1   $HOSTNAME" >> /etc/hosts
 
-# setup ssh
-RUN mkdir /var/run/sshd && \
-    sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
-
-
-# ROS2 ---------------------------------------------------------------------------
 # setup ros2 keys
 RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
 
