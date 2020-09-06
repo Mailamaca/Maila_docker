@@ -1,4 +1,4 @@
-FROM maila/ubuntu-focal-ros2-foxy
+FROM amd64/ros:foxy-ros-base-focal
 
 LABEL mantainer="Paolo Tomasin <pooltomasin@hotmail.com>"
 LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
@@ -9,21 +9,24 @@ LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
 # environment vars
 ENV UNITYVERSION 2019.4.8f1
 
-
-# install dotnet build support
-RUN bash -c '. /etc/os-release; wget -q https://packages.microsoft.com/config/${NAME,,}/${VERSION_ID,,}/packages-microsoft-prod.deb -O packages-microsoft-prod.deb'
-RUN dpkg -i packages-microsoft-prod.deb
-
 RUN apt-get update -qq && apt-get install -qq -y \
-  software-properties-common
+  wget
 
-RUN add-apt-repository universe
 
-RUN apt-get update -qq && apt-get install -qq -y \
-  apt-transport-https \
-  dotnet-sdk-3.1 \
-  aspnetcore-runtime-3.1 \
-  libunwind-dev
+# # install dotnet build support
+# RUN bash -c '. /etc/os-release; wget -q https://packages.microsoft.com/config/${NAME,,}/${VERSION_ID,,}/packages-microsoft-prod.deb -O packages-microsoft-prod.deb'
+# RUN dpkg -i packages-microsoft-prod.deb
+
+# RUN apt-get update -qq && apt-get install -qq -y \
+#   software-properties-common
+
+# RUN add-apt-repository universe
+
+# RUN apt-get update -qq && apt-get install -qq -y \
+#   apt-transport-https \
+#   dotnet-sdk-3.1 \
+#   aspnetcore-runtime-3.1 \
+#   libunwind-dev
 
 # Unity https://gitlab.com/gableroux/unity3d#build-the-image 
 RUN apt-get update && apt-get install -qq -y \
@@ -41,10 +44,13 @@ RUN apt-get update && apt-get install -qq -y \
 	libxss1 \
 	libcwiid1 \
 	libcwiid-dev \
-	xz-utils
+	xz-utils \
+	tar
 
 RUN wget https://beta.unity3d.com/download/60781d942082/UnitySetup-${UNITYVERSION} -O UnitySetup && \
     chmod +x UnitySetup
+    
+RUN mkdir -p /opt/Unity-${UNITYVERSION}
     
 RUN echo y | ./UnitySetup \
         --unattended \
