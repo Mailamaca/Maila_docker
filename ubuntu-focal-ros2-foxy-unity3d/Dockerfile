@@ -40,19 +40,20 @@ RUN echo y | ./UnitySetup \
 RUN ln -s /opt/Unity-${UNITYVERSION}/Editor/Unity /usr/bin/unity3d
 RUN rm UnitySetup
 
+# install dotnet build support
+RUN bash -c '. /etc/os-release; wget -q https://packages.microsoft.com/config/${NAME,,}/${VERSION_ID,,}/packages-microsoft-prod.deb -O packages-microsoft-prod.deb'
+RUN dpkg -i packages-microsoft-prod.deb
+
+RUN apt-get update -qq && apt-get install -qq -y \
+  software-properties-common
+
+RUN add-apt-repository universe
+
 RUN apt-get update -qq && apt-get install -qq -y \
   apt-transport-https \
   dotnet-sdk-3.1 \
   aspnetcore-runtime-3.1 \
   libunwind-dev
-
-# create std user named snail
-RUN useradd --create-home -ms /bin/bash snail
-RUN usermod -aG sudo snail
-
-# set user passwords
-RUN echo 'root:root' |chpasswd
-RUN echo 'snail:snail' |chpasswd
 
 # setup entrypoint
 COPY ./entrypoint.sh /
