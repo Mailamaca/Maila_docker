@@ -9,6 +9,22 @@ LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
 # environment vars
 ENV UNITYVERSION 2019.4.8f1
 
+
+# install dotnet build support
+RUN bash -c '. /etc/os-release; wget -q https://packages.microsoft.com/config/${NAME,,}/${VERSION_ID,,}/packages-microsoft-prod.deb -O packages-microsoft-prod.deb'
+RUN dpkg -i packages-microsoft-prod.deb
+
+RUN apt-get update -qq && apt-get install -qq -y \
+  software-properties-common
+
+RUN add-apt-repository universe
+
+RUN apt-get update -qq && apt-get install -qq -y \
+  apt-transport-https \
+  dotnet-sdk-3.1 \
+  aspnetcore-runtime-3.1 \
+  libunwind-dev
+
 # Unity https://gitlab.com/gableroux/unity3d#build-the-image 
 RUN apt-get update && apt-get install -qq -y \
 	libgtk2.0-0 \
@@ -39,21 +55,6 @@ RUN echo y | ./UnitySetup \
 
 RUN ln -s /opt/Unity-${UNITYVERSION}/Editor/Unity /usr/bin/unity3d
 RUN rm UnitySetup
-
-# install dotnet build support
-RUN bash -c '. /etc/os-release; wget -q https://packages.microsoft.com/config/${NAME,,}/${VERSION_ID,,}/packages-microsoft-prod.deb -O packages-microsoft-prod.deb'
-RUN dpkg -i packages-microsoft-prod.deb
-
-RUN apt-get update -qq && apt-get install -qq -y \
-  software-properties-common
-
-RUN add-apt-repository universe
-
-RUN apt-get update -qq && apt-get install -qq -y \
-  apt-transport-https \
-  dotnet-sdk-3.1 \
-  aspnetcore-runtime-3.1 \
-  libunwind-dev
 
 # setup entrypoint
 COPY ./entrypoint.sh /

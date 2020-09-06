@@ -1,10 +1,7 @@
-FROM amd64/ros:foxy-ros-base-focal
+FROM maila/ubuntu-focal-ros2-foxy-unity3d
 
 LABEL mantainer="Paolo Tomasin <pooltomasin@hotmail.com>"
 LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
-
-# run as root, let the entrypoint drop back to snail user
-USER root
 
 # setup environment
 ENV LANG C.UTF-8
@@ -58,11 +55,6 @@ RUN echo "127.0.0.1   $HOSTNAME" >> /etc/hosts
 # create std user named snail
 RUN useradd --create-home -ms /bin/bash snail
 RUN usermod -aG sudo snail
-
-# entrypoint is used to update uid/gid and then run the users command
-COPY scripts/entrypoint.sh /entrypoint.sh
-COPY scripts/synth-shell/.bashrc /home/snail
-COPY scripts/synth-shell/config /home/snail/.config/synth-shell
 
 # set user passwords
 RUN echo 'root:root' |chpasswd

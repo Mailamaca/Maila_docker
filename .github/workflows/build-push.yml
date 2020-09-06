@@ -21,8 +21,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Build the ros2 docker image
-      - name: Build docker images using cache
+      # Build maila/ubuntu-focal-ros2-foxy image
+      - name: Build maila/ubuntu-focal-ros2-foxy docker images using cache
         uses: whoan/docker-build-with-cache-action@v5
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -32,46 +32,46 @@ jobs:
           image_name: maila/ubuntu-focal-ros2-foxy
           tags: latest
 
-      # Runs a single command using the runners shell
-      - name: Build and push maila-dev
-        uses: docker/build-push-action@v1
+      # Build maila/ubuntu-focal-ros2-foxy-dotnet image
+      - name: Build maila/ubuntu-focal-ros2-foxy-dotnet docker images using cache
+        uses: whoan/docker-build-with-cache-action@v5
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          path: ./maila-dev/
-          repository: maila/maila-dev
-          cache_froms: maila/maila-dev:latest
+          context: ./ubuntu-focal-ros2-foxy-dotnet
+          dockerfile: Dockerfile
+          image_name: maila/ubuntu-focal-ros2-foxy-dotnet
           tags: latest
 
-      # Runs a single command using the runners shell
-      - name: Build and push ubuntu-focal-ros2-foxy-dotnet
-        uses: docker/build-push-action@v1
+      # Build maila/ubuntu-focal-ros2-foxy-unity3d image
+      - name: Build maila/ubuntu-focal-ros2-foxy-unity3d docker images using cache
+        uses: whoan/docker-build-with-cache-action@v5
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          path: ./ubuntu-focal-ros2-foxy-dotnet/
-          repository: maila/ubuntu-focal-ros2-foxy-dotnet
-          cache_froms: maila/ubuntu-focal-ros2-foxy-dotnet:latest
+          context: ./ubuntu-focal-ros2-foxy-unity3d
+          dockerfile: Dockerfile
+          image_name: maila/ubuntu-focal-ros2-foxy-unity3d
           tags: latest
 
-      # Runs a single command using the runners shell
-      - name: Build and push ubuntu-focal-ros2-foxy-unity3d
-        uses: docker/build-push-action@v1
+      # Build maila/maila-dev image
+      - name: Build maila-dev docker images using cache
+        uses: whoan/docker-build-with-cache-action@v5
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          path: ./ubuntu-focal-ros2-foxy-unity3d/
-          repository: maila/ubuntu-focal-ros2-foxy-unity3d
-          cache_froms: maila/ubuntu-focal-ros2-foxy-unity3d:latest
+          context: ./maila-dev
+          dockerfile: Dockerfile
+          image_name: maila/maila-dev
           tags: latest
 
-      # Runs a single command using the runners shell
-      - name: Build and push maila-sim
-        uses: docker/build-push-action@v1
+      # Build maila/maila-sim image
+      - name: Build maila-sim docker images using cache
+        uses: whoan/docker-build-with-cache-action@v5
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          path: ./maila-sim/
-          repository: maila/maila-sim
-          cache_froms: maila/maila-sim:latest
+          context: ./maila-sim
+          dockerfile: Dockerfile
+          image_name: maila/maila-sim
           tags: latest
