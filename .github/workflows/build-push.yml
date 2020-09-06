@@ -22,14 +22,15 @@ jobs:
         uses: actions/checkout@v2
 
       # Build the ros2 docker image
-      #- name: Build and push ubuntu-focal-ros2-foxy
-      #  uses: docker/build-push-action@v1
-      #  with:
-      #    username: ${{ secrets.DOCKER_USERNAME }}
-      #    password: ${{ secrets.DOCKER_PASSWORD }}
-      #    path: ./ubuntu-focal-ros2-foxy/
-      #    repository: maila/ubuntu-focal-ros2-foxy
-      #    tags: latest
+      - name: Build and push ubuntu-focal-ros2-foxy
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          path: ./ubuntu-focal-ros2-foxy/
+          repository: maila/ubuntu-focal-ros2-foxy
+          cache_froms: maila/ubuntu-focal-ros2-foxy:latest
+          tags: latest
 
       # Runs a single command using the runners shell
       - name: Build and push maila-dev
@@ -39,6 +40,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           path: ./maila-dev/
           repository: maila/maila-dev
+          cache_froms: maila/maila-dev:latest
           tags: latest
 
       # Runs a single command using the runners shell
@@ -49,6 +51,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           path: ./ubuntu-focal-ros2-foxy-dotnet/
           repository: maila/ubuntu-focal-ros2-foxy-dotnet
+          cache_froms: maila/ubuntu-focal-ros2-foxy-dotnet:latest
           tags: latest
 
       # Runs a single command using the runners shell
@@ -59,6 +62,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           path: ./ubuntu-focal-ros2-foxy-unity3d/
           repository: maila/ubuntu-focal-ros2-foxy-unity3d
+          cache_froms: maila/ubuntu-focal-ros2-foxy-unity3d:latest
           tags: latest
 
       # Runs a single command using the runners shell
@@ -69,4 +73,5 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           path: ./maila-sim/
           repository: maila/maila-sim
+          cache_froms: maila/maila-sim:latest
           tags: latest
