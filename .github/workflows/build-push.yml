@@ -28,7 +28,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           dockerfile: ./ubuntu-focal-ros2-foxy/Dockerfile
-    	  image_name: maila/ubuntu-focal-ros2-foxy
+          image_name: maila/ubuntu-focal-ros2-foxy
           tags: latest
 
       # Runs a single command using the runners shell
