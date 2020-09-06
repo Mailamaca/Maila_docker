@@ -110,6 +110,6 @@ RUN apt-get -qq clean all && \
 
 # setup entrypoint
 COPY ./entrypoint.sh /
-ENTRYPOINT [""]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
 
