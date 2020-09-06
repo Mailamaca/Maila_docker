@@ -39,6 +39,6 @@ RUN bash -c "source ${ROS2_WS}/install/local_setup.bash; source ${DOTNET_WS}/ins
 
 # setup entrypoint
 COPY ./entrypoint.sh /
-ENTRYPOINT [""]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
 
