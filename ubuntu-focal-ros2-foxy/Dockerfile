@@ -13,7 +13,7 @@ ENV ROS_CMAKE_BUILD_TYPE Release
 
 
 # setup entrypoint
-COPY ./entrypoint.sh /
+COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
 
