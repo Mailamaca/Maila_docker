@@ -30,7 +30,7 @@ jobs:
           context: ./ubuntu-focal-ros2-foxy-unity3d
           dockerfile: Dockerfile
           image_name: maila/ubuntu-focal-ros2-foxy-unity3d
-          tags: latest
+          image_tag: latest
 
       # Build maila/ubuntu-focal-ros2-foxy image
       - name: Build maila/ubuntu-focal-ros2-foxy docker images using cache
@@ -41,7 +41,7 @@ jobs:
           context: ./ubuntu-focal-ros2-foxy
           dockerfile: Dockerfile
           image_name: maila/ubuntu-focal-ros2-foxy
-          tags: latest
+          image_tag: latest
 
       # Build maila/ubuntu-focal-ros2-foxy-dotnet image
       - name: Build maila/ubuntu-focal-ros2-foxy-dotnet docker images using cache
@@ -52,7 +52,7 @@ jobs:
           context: ./ubuntu-focal-ros2-foxy-dotnet
           dockerfile: Dockerfile
           image_name: maila/ubuntu-focal-ros2-foxy-dotnet
-          tags: latest
+          image_tag: latest
 
       # Build maila/maila-dev image
       - name: Build maila-dev docker images using cache
@@ -63,7 +63,7 @@ jobs:
           context: ./maila-dev
           dockerfile: Dockerfile
           image_name: maila/maila-dev
-          tags: latest
+          image_tag: latest
 
       # Build maila/maila-sim image
       - name: Build maila-sim docker images using cache
@@ -74,4 +74,4 @@ jobs:
           context: ./maila-sim
           dockerfile: Dockerfile
           image_name: maila/maila-sim
-          tags: latest
+          image_tag: latest
