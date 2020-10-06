@@ -33,8 +33,7 @@ ENV LC_ALL C.UTF-8
 ENV ROS_DISTRO foxy
 
 # install ros2 packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-foxy-ros-core=0.9.2-1* \
+RUN apt-get update && apt-get install -y ros-foxy-desktop \
     && rm -rf /var/lib/apt/lists/*
 
 # install utility packages
