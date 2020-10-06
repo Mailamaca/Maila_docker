@@ -3,29 +3,39 @@ FROM amd64/ubuntu:20.04
 LABEL mantainer="Paolo Tomasin <pooltomasin@hotmail.com>"
 LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
 
+#refs: https://github.com/osrf/docker_images/blob/30496b03a10f37d3ee54d5df672a0c27e0ab3952/ros/foxy/ubuntu/focal/ros-core/Dockerfile
 #refs: https://index.ros.org/doc/ros2/Installation/Foxy/Linux-Development-Setup/ 
 #refs: https://github.com/DynoRobotics/dyno-docker-images/blob/master/balena-amd64-ros2/dashing-isolated-cyclone/Dockerfile
 
-# environment vars
-ENV ROS_DISTRO foxy
-ENV ROS2_WS /opt/ros2_ws
-ENV ROS_CMAKE_BUILD_TYPE Release
+# setup timezone
+RUN echo 'Etc/UTC' > /etc/timezone && \
+    ln -s /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
+    apt-get update && \
+    apt-get install -q -y --no-install-recommends tzdata && \
+    rm -rf /var/lib/apt/lists/*
 
-# setup timezone and environment
-RUN apt-get update -qq && apt-get install -qq -y \
-    lsb-release \
-    locales \
-    curl \
+# install packages
+RUN apt-get update && apt-get install -q -y --no-install-recommends \
+    dirmngr \
     gnupg2 \
-    tzdata
-    
-RUN echo 'Etc/UTC' > /etc/timezone
-RUN ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime
+    && rm -rf /var/lib/apt/lists/*
 
-RUN locale-gen --purge en_US.UTF-8 \
-    && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+# setup keys
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+
+# setup sources.list
+RUN echo "deb http://packages.ros.org/ros2/ubuntu focal main" > /etc/apt/sources.list.d/ros2-latest.list
+
+# environment vars
+ENV ROS2_WS /opt/ros2_ws
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
+ENV ROS_DISTRO foxy
+
+# install ros2 packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-foxy-ros-core=0.9.2-1* \
+    && rm -rf /var/lib/apt/lists/*
 
 # install utility packages
 RUN apt-get update -qq && apt-get install -qq -y \
@@ -35,18 +45,10 @@ RUN apt-get update -qq && apt-get install -qq -y \
   wget \
   vim \
   less \
-  net-tools \
   htop \
-  can-utils \
   iputils-ping \
   xz-utils \
   openssh-server
-
-# setup ros2 keys
-RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
-
-# setup sources.list
-RUN echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list
 
 # install ROS2 dependencies
 RUN apt-get update -qq && apt-get install -qq -y \
@@ -63,6 +65,7 @@ RUN apt-get update -qq && apt-get install -qq -y \
   libasio-dev \
   libtinyxml2-dev
 
+# Install pip packages
 RUN python3 -m pip install -U \
   argcomplete \
   flake8-blind-except \
@@ -83,20 +86,17 @@ RUN python3 -m pip install -U \
   autopep8
 
 # install Fast-RTPS dependencies
-sudo apt install --no-install-recommends -y \
+RUN apt install --no-install-recommends -y \
   libasio-dev \
   libtinyxml2-dev
+
 # install Cyclone DDS dependencies
-sudo apt install --no-install-recommends -y \
+RUN apt install --no-install-recommends -y \
   libcunit1-dev
 
-# clone sources
+# build cyclone DDS sources
 RUN mkdir -p $ROS2_WS/src
 WORKDIR $ROS2_WS
-RUN wget https://raw.githubusercontent.com/ros2/ros2/$ROS_DISTRO/ros2.repos
-RUN vcs import src < ros2.repos
-
-# Build Cyclone DDS
 RUN cd $ROS2_WS/src && \
     git clone https://github.com/ros2/rmw_cyclonedds ros2/rmw_cyclonedds && \
     git clone https://github.com/eclipse-cyclonedds/cyclonedds eclipse-cyclonedds/cyclonedds
@@ -112,7 +112,7 @@ RUN cd $ROS2_WS && rosdep init && \
     --skip-keys "console_bridge fastcdr fastrtps rti-connext-dds-5.3.1 urdfdom_headers"
 
 # build source
-RUN colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=$ROS_CMAKE_BUILD_TYPE
+RUN colcon build --packages-select rmw_cyclonedds
 
 # cleanup
 RUN apt-get -qq clean all && \
