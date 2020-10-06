@@ -79,7 +79,16 @@ RUN python3 -m pip install -U \
   pytest-cov \
   pytest-runner \
   setuptools \
-  bash-completion
+  bash-completion \
+  autopep8
+
+# install Fast-RTPS dependencies
+sudo apt install --no-install-recommends -y \
+  libasio-dev \
+  libtinyxml2-dev
+# install Cyclone DDS dependencies
+sudo apt install --no-install-recommends -y \
+  libcunit1-dev
 
 # clone sources
 RUN mkdir -p $ROS2_WS/src
@@ -87,8 +96,13 @@ WORKDIR $ROS2_WS
 RUN wget https://raw.githubusercontent.com/ros2/ros2/$ROS_DISTRO/ros2.repos
 RUN vcs import src < ros2.repos
 
+# Build Cyclone DDS
+RUN cd $ROS2_WS/src && \
+    git clone https://github.com/ros2/rmw_cyclonedds ros2/rmw_cyclonedds && \
+    git clone https://github.com/eclipse-cyclonedds/cyclonedds eclipse-cyclonedds/cyclonedds
+
 # bootstrap rosdep and install dependencies
-RUN rosdep init && \
+RUN cd $ROS2_WS && rosdep init && \
     rosdep update && \
     apt-get update -qq && \
     rosdep install -y \
@@ -98,7 +112,7 @@ RUN rosdep init && \
     --skip-keys "console_bridge fastcdr fastrtps rti-connext-dds-5.3.1 urdfdom_headers"
 
 # build source
-RUN colcon build --cmake-args -DCMAKE_BUILD_TYPE=$ROS_CMAKE_BUILD_TYPE
+RUN colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=$ROS_CMAKE_BUILD_TYPE
 
 # cleanup
 RUN apt-get -qq clean all && \
