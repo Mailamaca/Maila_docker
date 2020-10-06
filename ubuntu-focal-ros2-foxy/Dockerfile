@@ -4,7 +4,7 @@ LABEL mantainer="Paolo Tomasin <pooltomasin@hotmail.com>"
 LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
 
 #refs: https://github.com/osrf/docker_images/blob/30496b03a10f37d3ee54d5df672a0c27e0ab3952/ros/foxy/ubuntu/focal/ros-core/Dockerfile
-#refs: https://index.ros.org/doc/ros2/Installation/Foxy/Linux-Development-Setup/ 
+#refs: https://index.ros.org/doc/ros2/Installation/Foxy/Linux-Development-Setup/
 #refs: https://github.com/DynoRobotics/dyno-docker-images/blob/master/balena-amd64-ros2/dashing-isolated-cyclone/Dockerfile
 
 # setup timezone
@@ -15,9 +15,19 @@ RUN echo 'Etc/UTC' > /etc/timezone && \
     rm -rf /var/lib/apt/lists/*
 
 # install packages
-RUN apt-get update && apt-get install -q -y --no-install-recommends \
-    dirmngr \
-    gnupg2 \
+RUN apt-get update -qq && apt-get install -q -y --no-install-recommends \
+    apt-utils=2.0.2ubuntu0.1\
+    cmake=3.16.3-1ubuntu1 \
+    curl=7.68.0-1ubuntu2.2 \
+    git=1:2.25.1-1ubuntu3 \
+    gnupg2=2.2.19-3ubuntu2 \
+    htop=2.2.0-2build1 \
+    iputils-ping=3:20190709-3 \
+    less=551-1ubuntu0.1 \
+    nano=4.8-1ubuntu1 \
+    openssh-server=1:8.2p1-4ubuntu0.1 \
+    xz-utils=5.2.4-1ubuntu1 \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # setup keys
@@ -34,74 +44,61 @@ ENV ROS_DISTRO foxy
 
 # install ros2 packages
 RUN apt-get update && apt-get install -y ros-foxy-desktop \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-# install utility packages
-RUN apt-get update -qq && apt-get install -qq -y \
-  apt-utils \
-  curl \
-  nano \
-  wget \
-  vim \
-  less \
-  htop \
-  iputils-ping \
-  xz-utils \
-  openssh-server
 
 # install ROS2 dependencies
 RUN apt-get update -qq && apt-get install -qq -y \
-  build-essential \
-  cmake \
-  git \
-  python3-colcon-common-extensions \
-  python3-flake8 \
-  python3-pip \
-  python3-rosdep \
-  python3-vcstool \
-  dirmngr \
-  libcunit1-dev \
-  libasio-dev \
-  libtinyxml2-dev
+    python3-colcon-common-extensions=0.2.1-1 \
+    python3-flake8=3.7.9-2 \
+    python3-pip=20.0.2-5ubuntu1.1 \
+    python3-rosdep=0.19.0-1 \
+    python3-vcstool=0.2.14-1 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install pip packages
 RUN python3 -m pip install -U \
-  argcomplete \
-  flake8-blind-except \
-  flake8-builtins \
-  flake8-class-newline \
-  flake8-comprehensions \
-  flake8-deprecated \
-  flake8-docstrings \
-  flake8-import-order \
-  flake8-quotes \
-  pytest-repeat \
-  pytest-rerunfailures \
-  pytest \
-  pytest-cov \
-  pytest-runner \
-  setuptools \
-  bash-completion \
-  autopep8
+    argcomplete \
+    flake8-blind-except \
+    flake8-builtins \
+    flake8-class-newline \
+    flake8-comprehensions \
+    flake8-deprecated \
+    flake8-docstrings \
+    flake8-import-order \
+    flake8-quotes \
+    pytest-repeat \
+    pytest-rerunfailures \
+    pytest \
+    pytest-cov \
+    pytest-runner \
+    setuptools \
+    bash-completion \
+    autopep8
 
 # install Fast-RTPS dependencies
 RUN apt install --no-install-recommends -y \
-  libasio-dev \
-  libtinyxml2-dev
+    libasio-dev \
+    libtinyxml2-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # install Cyclone DDS dependencies
 RUN apt install --no-install-recommends -y \
-  libcunit1-dev
+    libcunit1-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # build cyclone DDS sources
 RUN mkdir -p $ROS2_WS/src
-WORKDIR $ROS2_WS
-RUN cd $ROS2_WS/src && \
-    git clone https://github.com/ros2/rmw_cyclonedds ros2/rmw_cyclonedds && \
+WORKDIR $ROS2_WS/src
+RUN git clone https://github.com/ros2/rmw_cyclonedds ros2/rmw_cyclonedds && \
     git clone https://github.com/eclipse-cyclonedds/cyclonedds eclipse-cyclonedds/cyclonedds
 
 # bootstrap rosdep and install dependencies
-RUN cd $ROS2_WS && rosdep init && \
+WORKDIR $ROS2_WS
+RUN rosdep init && \
     rosdep update && \
     apt-get update -qq && \
     rosdep install -y \
@@ -119,7 +116,7 @@ RUN apt-get -qq clean all && \
     rm -r -f /dockerFiles/* && \
     rm -r -f /var/tmp/* && \
     rm -r -f /var/lib/apt/lists/*
-    
+
 
 # setup entrypoint
 COPY ./entrypoint.sh /
