@@ -1,5 +1,6 @@
 # Docker -  Development Environment
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4eaea9585d914f7baff0397e2bedeb44)](https://app.codacy.com/gh/Mailamaca/Maila_docker?utm_source=github.com&utm_medium=referral&utm_content=Mailamaca/Maila_docker&utm_campaign=Badge_Grade)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 [![Open Source Love png2](https://badges.frapsoft.com/os/v2/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
 
