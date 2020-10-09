@@ -7,19 +7,37 @@ LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
 #refs: https://index.ros.org/doc/ros2/Installation/Foxy/Linux-Development-Setup/
 #refs: https://github.com/DynoRobotics/dyno-docker-images/blob/master/balena-amd64-ros2/dashing-isolated-cyclone/Dockerfile
 
+# https://github.com/phusion/baseimage-docker/issues/58
+ENV DEBIAN_FRONTEND noninteractive
+
+# Install apt-utils
+RUN apt-get update -qq && apt-get install -q -y --no-install-recommends \
+    apt-utils=2.0.2ubuntu0.1 \
+    && rm -rf /var/lib/apt/lists/*
+
 # setup timezone
 RUN echo 'Etc/UTC' > /etc/timezone && \
     ln -s /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
-    apt-get update && \
-    apt-get install -q -y --no-install-recommends tzdata && \
+    apt-get update -qq && apt-get install -q -y --no-install-recommends \
+    tzdata && \
     rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update -qq && apt-get install -q -y --no-install-recommends locales
+RUN locale-gen en_US en_US.UTF-8
+RUN update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+
+# environment vars
+ENV RMW_IMPLEMENTATION rmw_cyclonedds_cpp
+ENV ROS2_WS /opt/ros2_ws
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+ENV ROS_DISTRO foxy
 
 # install packages
 RUN apt-get update -qq && apt-get install -q -y --no-install-recommends \
-    apt-utils=2.0.2ubuntu0.1\
-    cmake=3.16.3-1ubuntu1 \
+    ca-certificates \
+    wget \
     curl=7.68.0-1ubuntu2.2 \
-    git=1:2.25.1-1ubuntu3 \
     gnupg2=2.2.19-3ubuntu2 \
     htop=2.2.0-2build1 \
     iputils-ping=3:20190709-3 \
@@ -27,37 +45,31 @@ RUN apt-get update -qq && apt-get install -q -y --no-install-recommends \
     nano=4.8-1ubuntu1 \
     openssh-server=1:8.2p1-4ubuntu0.1 \
     xz-utils=5.2.4-1ubuntu1 \
+    lsb-release \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# setup keys
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+# Add the ROS 2 apt repository¶
+RUN wget -qO - https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
+RUN sh -c 'echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list'
 
-# setup sources.list
-RUN echo "deb http://packages.ros.org/ros2/ubuntu focal main" > /etc/apt/sources.list.d/ros2-latest.list
-
-# environment vars
-ENV ROS2_WS /opt/ros2_ws
-ENV LANG C.UTF-8
-ENV LC_ALL C.UTF-8
-ENV ROS_DISTRO foxy
-
-# install ros2 packages
-RUN apt-get update && apt-get install -y ros-foxy-desktop \
+# Install development tools and ROS tools
+RUN apt-get update -qq && apt-get install -qq --no-install-recommends -y \
+    build-essential \
+    cmake=3.16.3-1ubuntu1 \
+    git=1:2.25.1-1ubuntu3 \
+    libbullet-dev \
+    python3-colcon-common-extensions \
+    python3-flake8 \
+    python3-pip \
+    python3-pytest-cov \
+    python3-rosdep \
+    python3-setuptools \
+    python3-vcstool \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# install ROS2 dependencies
-RUN apt-get update -qq && apt-get install -qq -y \
-    python3-colcon-common-extensions=0.2.1-1 \
-    python3-flake8=3.7.9-2 \
-    python3-pip=20.0.2-5ubuntu1.1 \
-    python3-rosdep=0.19.0-1 \
-    python3-vcstool=0.2.14-1 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install pip packages
+# install some pip packages needed for testing
 RUN python3 -m pip install -U \
     argcomplete \
     flake8-blind-except \
@@ -77,28 +89,16 @@ RUN python3 -m pip install -U \
     bash-completion \
     autopep8
 
-# install Fast-RTPS dependencies
-RUN apt install --no-install-recommends -y \
-    libasio-dev \
-    libtinyxml2-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# install Cyclone DDS dependencies
-RUN apt install --no-install-recommends -y \
-    libcunit1-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# build cyclone DDS sources
+# Get ROS 2 code
 RUN mkdir -p $ROS2_WS/src
-WORKDIR $ROS2_WS/src
-RUN git clone https://github.com/ros2/rmw_cyclonedds ros2/rmw_cyclonedds && \
-    git clone https://github.com/eclipse-cyclonedds/cyclonedds eclipse-cyclonedds/cyclonedds
+WORKDIR $ROS2_WS
+RUN wget https://raw.githubusercontent.com/ros2/ros2/foxy/ros2.repos
+RUN vcs import src < ros2.repos
 
 # bootstrap rosdep and install dependencies
 WORKDIR $ROS2_WS
 RUN rosdep init && \
+    rosdep fix-permissions && \
     rosdep update && \
     apt-get update -qq && \
     rosdep install -y \
@@ -107,8 +107,25 @@ RUN rosdep init && \
     --rosdistro $ROS_DISTRO \
     --skip-keys "console_bridge fastcdr fastrtps rti-connext-dds-5.3.1 urdfdom_headers"
 
+# install Fast-RTPS dependencies
+RUN apt-get update -qq && apt-get install -qq --no-install-recommends -y \
+    libasio-dev \
+    libtinyxml2-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# install Cyclone DDS dependencies
+RUN apt-get update -qq && apt-get install -qq --no-install-recommends -y \
+    libcunit1-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 # build source
-RUN colcon build --packages-select rmw_cyclonedds
+RUN colcon build --symlink-install
+
+# Install cyclone DDS from apt
+RUN apt-get update -qq && apt-get install -qq --no-install-recommends -y \
+    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp
 
 # cleanup
 RUN apt-get -qq clean all && \
@@ -117,6 +134,8 @@ RUN apt-get -qq clean all && \
     rm -r -f /var/tmp/* && \
     rm -r -f /var/lib/apt/lists/*
 
+# https://github.com/phusion/baseimage-docker/issues/58#issuecomment-248621422
+ENV DEBIAN_FRONTEND teletype
 
 # setup entrypoint
 COPY ./entrypoint.sh /

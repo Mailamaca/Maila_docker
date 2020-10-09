@@ -58,10 +58,10 @@ Complete the following steps to create a new container:
     git clone https://github.com/Mailamaca/Maila_docker.git
     ```
 
-1. **Customize some settings to reflect your needs (optional)**
+2. **Customize some settings to reflect your needs (optional)**
     You can change some Environment Variables directly in the [Dockerfile](https://github.com/Mailamaca/Maila_docker/blob/master/Dockerfile):
 
-1. **Build the Docker Image**
+3. **Build the Docker Image**
 
     ```bash
     cd /path/to/Maila_docker
@@ -73,7 +73,7 @@ Complete the following steps to create a new container:
 
     *Note: Please be sure to have enough disk space left. Building this image needs around 2GB of free space. The successfully built image has a size of 2GB*
 
-1. **Run (create+start) Docker Container**
+4. **Run (create+start) Docker Container**
 
    * `--rm` Automatically remove the container when it exits
 
@@ -119,13 +119,13 @@ Complete the following steps to create a new container:
 
     this will be the main terminal windows, when this closes the container colses and all things made in it will be lost!
 
-2. **Open a new terminal connected to the container (AS USER)**
+6. **Open a new terminal connected to the container (AS USER)**
 
     ``` bash
     docker exec -it maila-container bash
     ```
 
-3. **Open a new terminal connected to the container (AS ROOT)**
+7. **Open a new terminal connected to the container (AS ROOT)**
 
     ``` bash
     docker exec -u 0 -it maila-container bash
