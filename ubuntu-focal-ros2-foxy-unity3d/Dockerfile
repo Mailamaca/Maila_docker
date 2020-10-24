@@ -64,5 +64,5 @@ RUN rm UnitySetup
 
 # setup entrypoint
 COPY ./entrypoint.sh /
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT [""]
 CMD ["bash"]

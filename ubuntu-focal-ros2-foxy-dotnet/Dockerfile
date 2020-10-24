@@ -1,4 +1,4 @@
-FROM maila/ubuntu-focal-ros2-foxy
+FROM amd64/ros:foxy-ros-base-focal
 
 LABEL mantainer="Paolo Tomasin <pooltomasin@hotmail.com>"
 LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
@@ -9,6 +9,9 @@ LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
 # environment vars
 ENV ROS2_WS /opt/ros2_ws
 ENV DOTNET_WS /opt/dotnet_ws
+
+RUN apt-get update -qq && apt-get install -qq -y \
+  wget
 
 # install dotnet build support
 RUN bash -c '. /etc/os-release; wget -q https://packages.microsoft.com/config/${NAME,,}/${VERSION_ID,,}/packages-microsoft-prod.deb -O packages-microsoft-prod.deb'
@@ -34,8 +37,8 @@ RUN vcs import src < ros2_dotnet.repos
 
 # build source
 WORKDIR $DOTNET_WS
-RUN bash -c "source ${ROS2_WS}/install/local_setup.bash; colcon build"
-RUN bash -c "source ${ROS2_WS}/install/local_setup.bash; source ${DOTNET_WS}/install/local_setup.bash; ros2 run rcldotnet_utils create_unity_plugin"
+RUN bash -c "source /opt/ros/foxy/setup.bash; colcon build"
+RUN bash -c "source /opt/ros/foxy/setup.bash; source ${DOTNET_WS}/install/local_setup.bash; ros2 run rcldotnet_utils create_unity_plugin"
 
 # setup entrypoint
 COPY ./entrypoint.sh /

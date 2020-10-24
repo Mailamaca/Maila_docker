@@ -1,4 +1,4 @@
-FROM maila/ubuntu-focal-ros2-foxy-unity3d
+FROM ubuntu-focal-ros2-foxy-unity3d
 
 LABEL mantainer="Paolo Tomasin <pooltomasin@hotmail.com>"
 LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
@@ -9,8 +9,7 @@ ENV LC_ALL C.UTF-8
 ENV ROS_DISTRO foxy
 
 # install packages
-RUN apt-get update && apt-get install -y \
-    openssh-server \
+RUN apt-get update -qq && apt-get install -qq -y \
     lsb-release \
     dirmngr \
     gnupg2 \
@@ -18,34 +17,7 @@ RUN apt-get update && apt-get install -y \
     nano \
     curl \
     libasio-dev \
-    libwiringpi-dev \
-    libgps-dev \
-    gpsd \
-    gpsd-clients \
-    fonts-powerline \
-    libbluetooth-dev 
-    
-
-# Install ros2 pkg
-RUN apt-get update && apt-get install -y \
-    ros-${ROS_DISTRO}-demo-nodes-cpp \
-    ros-${ROS_DISTRO}-demo-nodes-py \
-    ros-${ROS_DISTRO}-diagnostic-msgs \
-    ros-${ROS_DISTRO}-diagnostic-updater \
-    ros-${ROS_DISTRO}-diagnostic-aggregator \
-    ros-${ROS_DISTRO}-turtlesim
-    
-# Tool to format the code
-RUN apt-get update && apt-get install -y \
-    ros-${ROS_DISTRO}-ament-clang-format \
-    ros-${ROS_DISTRO}-ament-cmake-clang-format 
-
-
-# setup ssh
-RUN mkdir /var/run/sshd && \
-    sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
-
+    libglu1-mesa-dev
 
 # add hostname
 RUN echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
@@ -60,6 +32,10 @@ RUN usermod -aG sudo snail
 RUN echo 'root:root' |chpasswd
 RUN echo 'snail:snail' |chpasswd
 
+# UnityHub
+RUN wget https://public-cdn.cloud.unity3d.com/hub/prod/UnityHub.AppImage -O /home/snail/UnityHub.AppImage && \
+    chmod +x /home/snail/UnityHub.AppImage
+
 # Cleanup
 RUN apt-get -qq clean all && \
     rm -r -f /tmp/* && \
@@ -67,7 +43,7 @@ RUN apt-get -qq clean all && \
     rm -r -f /var/tmp/* && \
     rm -r -f /var/lib/apt/lists/*
 
-#ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT [""]
 WORKDIR /home/snail
 CMD ["bash"]
 
