@@ -1,5 +1,6 @@
 # Docker -  Development Environment
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4eaea9585d914f7baff0397e2bedeb44)](https://app.codacy.com/gh/Mailamaca/Maila_docker?utm_source=github.com&utm_medium=referral&utm_content=Mailamaca/Maila_docker&utm_campaign=Badge_Grade)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 [![Open Source Love png2](https://badges.frapsoft.com/os/v2/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
 
@@ -18,9 +19,10 @@ This Docker Image contains the following:
 To get started, follow these steps:
 
 ### 1 Install docker
+
 Install and configure [Docker](https://www.docker.com/get-started) for your operating system.
 
-##### Windows
+#### Windows
 
 1. Install [Docker Desktop for Windows/Mac](https://www.docker.com/products/docker-desktop).
 
@@ -28,11 +30,12 @@ Install and configure [Docker](https://www.docker.com/get-started) for your oper
 
 3. If you are using WSL 2 on Windows, to enable the [Windows WSL 2 back-end](https://aka.ms/vscode-remote/containers/docker-wsl2): Right-click on the Docker taskbar item and select **Settings**. Check **Use the WSL 2 based engine** and verify your distribution is enabled under **Resources > WSL Integration**.
 
-##### Linux
+#### Linux
 
 1. Follow the [official install instructions for Docker CE/EE for your distribution](https://docs.docker.com/install/#supported-platforms). If you are using Docker Compose, follow the Docker Compose directions as well.
 
 2. Add your user to the **docker** group by using a terminal to run: `sudo usermod -aG docker $USER`
+
 ```bash
 sudo groupadd docker
 sudo usermod -aG docker $USER
@@ -41,6 +44,7 @@ sudo usermod -aG docker $USER
 3. Sign out and back in again so your changes take effect.
 
 ### 2 Install Visaul Studio code
+
 1 - Install [Visual Studio Code](https://code.visualstudio.com/) or [Visual Studio Code Insiders](https://code.visualstudio.com/insiders/).
 
 2 - Install the [Remote Development extension pack](https://aka.ms/vscode-remote/download/extension).
@@ -55,10 +59,10 @@ Complete the following steps to create a new container:
     git clone https://github.com/Mailamaca/Maila_docker.git
     ```
 
-1. **Customize some settings to reflect your needs (optional)**
+2. **Customize some settings to reflect your needs (optional)**
     You can change some Environment Variables directly in the [Dockerfile](https://github.com/Mailamaca/Maila_docker/blob/master/Dockerfile):
 
-1. **Build the Docker Image**
+3. **Build the Docker Image**
 
     ```bash
     cd /path/to/Maila_docker
@@ -70,19 +74,26 @@ Complete the following steps to create a new container:
 
     *Note: Please be sure to have enough disk space left. Building this image needs around 2GB of free space. The successfully built image has a size of 2GB*
 
-1. **Run (create+start) Docker Container**
-   
-   
-   - `--rm` Automatically remove the container when it exits
-   - `-it` sets it as interactable and using stdin and stdout
-   - `--name` sets the name of the container
-   - `--h` sets the hostname of the container
-   - `--mount` mount a volume, src=host/path, dst=container/path
-   - `-v /tmp/.X11-unix:/tmp/.X11-unix` sets a volume to share the x server
-   - `--env DISPLAY=$DISPLAY` sets an environment var for GUI
-   - `-p` sets a port forwarding (for SSH e.g)
+4. **Run (create+start) Docker Container**
+
+   * `--rm` Automatically remove the container when it exits
+
+   * `-it` sets it as interactable and using stdin and stdout
+
+   * `--name` sets the name of the container
+
+   * `--h` sets the hostname of the container
+
+   * `--mount` mount a volume, src=host/path, dst=container/path
+
+   * `-v /tmp/.X11-unix:/tmp/.X11-unix` sets a volume to share the x server
+
+   * `--env DISPLAY=$DISPLAY` sets an environment var for GUI
+
+   * `-p` sets a port forwarding (for SSH e.g)
 
     Start as root:
+
     ``` bash
     docker run --rm -it \
         --name maila-container -h maila \
@@ -95,6 +106,7 @@ Complete the following steps to create a new container:
     ```
 
     Start as user:
+
     ``` bash
     docker run --rm -it \
         --name maila-container -h maila \
@@ -108,13 +120,13 @@ Complete the following steps to create a new container:
 
     this will be the main terminal windows, when this closes the container colses and all things made in it will be lost!
 
-2. **Open a new terminal connected to the container (AS USER)**
+6. **Open a new terminal connected to the container (AS USER)**
 
     ``` bash
     docker exec -it maila-container bash
     ```
 
-3. **Open a new terminal connected to the container (AS ROOT)**
+7. **Open a new terminal connected to the container (AS ROOT)**
 
     ``` bash
     docker exec -u 0 -it maila-container bash
@@ -130,7 +142,7 @@ Complete the following steps to create a new container:
 
 4. Done! It will open the up-folder of Maila_docker inside the container
 
-NOTE: the ```.devcontainer.json``` file contains all the information, it is quite the same as ```docker run``` 
+NOTE: the ```.devcontainer.json``` file contains all the information, it is quite the same as ```docker run```
 
 ## SSH
 
@@ -151,17 +163,16 @@ NOTE: the ```.devcontainer.json``` file contains all the information, it is quit
     root | root
 
 3. **if HOST IDENTIIFATION HAS CHANGED try this command**
-   
+
    ```bash
     ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R "[localhost]:2222"
     ```
 
     then re-launch the ssh service in the previuous terminal and then re-try to login
 
-
 ## Docker useful commands
 
-#### Remove container
+### Remove container
 
 1. Get all containers
 
@@ -175,7 +186,7 @@ NOTE: the ```.devcontainer.json``` file contains all the information, it is quit
    docker rm maila
    ```
 
-#### Remove docker image
+### Remove docker image
 
 1. Get all images
 
@@ -195,20 +206,19 @@ NOTE: the ```.devcontainer.json``` file contains all the information, it is quit
    docker rmi $(docker images -f "dangling=true" -q)
    ```
 
-#### Start/Stop of Docker Container
+### Start/Stop of Docker Container
 
-    ```bash
-    docker start -ia <your-docker-container-name>
-    docker stop <your-docker-container-name>
-    # e.g
-    docker start -ia maila-container
-    docker stop maila-container
-    ```
+```bash
+docker start -ia <your-docker-container-name>
+docker stop <your-docker-container-name>
+# e.g
+docker start -ia maila-container
+docker stop maila-container
+```
 
+### Backup container state (NOT THE DATA VOLUME)
 
-#### Backup container state (NOT THE DATA VOLUME)
-
-1. Create a backup of the container to an image. 
+1. Create a backup of the container to an image.
 
    ``` bash
    docker commit -p maila maila/backup:20200720
@@ -231,8 +241,6 @@ NOTE: the ```.devcontainer.json``` file contains all the information, it is quit
    ```
 
 2. You can create container from this image using “docker create“. If you had data volume on the original container. You must restore the data volume too and run container with the data volume (docker create -v)
-
-
 
 #### Check the version of Docker installed on your machine
 
@@ -278,11 +286,12 @@ ros2 run turtlesim turtle_teleop_key
 ```
 
 ## Credits
+
 This Dockerfile is based on the following work:
 
--  Daniel Hochleitner's GitHub Project [ Dani3lSun/docker-db-apex-dev](https://github.com/Dani3lSun/docker-db-apex-dev)
+* Daniel Hochleitner's GitHub Project [ Dani3lSun/docker-db-apex-dev](https://github.com/Dani3lSun/docker-db-apex-dev)
 
-- https://tuw-cpsg.github.io/tutorials/docker-ros/
+* https://tuw-cpsg.github.io/tutorials/docker-ros/
 
 ## License
 
