@@ -16,9 +16,9 @@ RUN echo 'root:root' |chpasswd
 RUN echo 'snail:snail' |chpasswd
 
 # add hostname
-RUN echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
-RUN echo "::1         localhost localhost.localdomain localhost6 localhost6.localdomain6" >> /etc/hosts
-RUN echo "127.0.0.1   $HOSTNAME" >> /etc/hosts
+#RUN echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
+#RUN echo "::1         localhost localhost.localdomain localhost6 localhost6.localdomain6" >> /etc/hosts
+#RUN echo "127.0.0.1   $HOSTNAME" >> /etc/hosts
 
 # setup ssh
 RUN mkdir /var/run/sshd && \
