@@ -7,6 +7,7 @@ LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
 #refs: https://github.com/DynoRobotics/dyno-docker-images/blob/master/balena-amd64-ros2/dashing-isolated-cyclone/Dockerfile
 #refs: https://github.com/osrf/docker_images/blob/30496b03a10f37d3ee54d5df672a0c27e0ab3952/ros/foxy/ubuntu/focal/ros-core/Dockerfile
 #refs: https://index.ros.org/doc/ros2/Installation/DDS-Implementations/Working-with-Eclipse-CycloneDDS/
+#refs: https://www.programmersought.com/article/6188661315/
 
 # environment vars
 ENV ROS_DISTRO foxy
@@ -38,12 +39,25 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq && apt-get install -qq \
     ros-foxy-desktop && \
     rm -rf /var/lib/apt/lists/*
+    
+# install colcon
+RUN apt-get update -qq && apt-get install -qq \
+    build-essential \
+    cmake \
+    python3-colcon-common-extensions && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install argcomplete
 RUN apt-get update -qq && apt-get install -qq \
     python3-pip && \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install -U argcomplete
+    
+# install Fast-RTPS dependencies
+RUN apt-get update -qq && apt-get install -qq \
+    libasio-dev \
+    libtinyxml2-dev && \
+    rm -rf /var/lib/apt/lists/*
     
 # install cyclone DDS
 RUN apt-get update -qq && apt-get install -qq \
@@ -62,7 +76,8 @@ RUN apt-get update -qq && apt-get install -qq \
     can-utils \
     iputils-ping \
     xz-utils \
-    openssh-server && \
+    openssh-server \
+    git && \
     rm -rf /var/lib/apt/lists/*
 
 # cleanup
