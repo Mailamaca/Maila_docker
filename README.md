@@ -10,13 +10,11 @@ To ensure a common, consistent development environment we develop a docker image
 
 This Docker Image contains the following:
 
-* Ubuntu Focal Fossa 20.04
-* ROS2 Foxy Fitzroy
-* ...
+* ***maila-base*** image containing of the core module avoiding heavy visual tool application and physics simulator
+* ***mailla-dev*** image containing the complete set of tools needed to develop application within the Maila project
+* ***coming soon***
 
-## Installation
-
-To get started, follow these steps:
+## Prerequisites
 
 ### 1 Install docker
 
@@ -36,244 +34,82 @@ Install and configure [Docker](https://www.docker.com/get-started) for your oper
 
 2. Add your user to the **docker** group by using a terminal to run: `sudo usermod -aG docker $USER`
 
-```bash
-sudo groupadd docker
-sudo usermod -aG docker $USER
-```
+   ```shell
+   sudo groupadd docker
+   sudo usermod -aG docker $USER
+   ```
 
 3. Sign out and back in again so your changes take effect.
 
-### 2 Install Visaul Studio code
+## Get the images
 
-1 - Install [Visual Studio Code](https://code.visualstudio.com/) or [Visual Studio Code Insiders](https://code.visualstudio.com/insiders/).
+There are 2 ways of getting the running Docker images. The fastest approach is to directly download from Docker Hub the images. The second approach require to download the repository and build the images.
 
-2 - Install the [Remote Development extension pack](https://aka.ms/vscode-remote/download/extension).
+### From Docker Hub
 
-## Settings (recommended)
+The simpler way to get the Docker images is from Docker Hub.
 
-Complete the following steps to create a new container:
+- `docker pull maila/maila-dev:latest` download the maila-dev image
+- `docker pull maila/maila-base:latest`download the maila-base image
 
-1. **Clone or Download the Github Repository to your local Machine**
+### Building the Docker images
+
+1. **Clone** or Download the Github Repository to your local Machine
 
     ```bash
     git clone https://github.com/Mailamaca/Maila_docker.git
     ```
 
-2. **Customize some settings to reflect your needs (optional)**
-    You can change some Environment Variables directly in the [Dockerfile](https://github.com/Mailamaca/Maila_docker/blob/master/Dockerfile):
-
-3. **Build the Docker Image**
+2. **Build the Docker Image**
 
     ```bash
     cd /path/to/Maila_docker
-    docker build -t <your-docker-image-name> .
-    # e.g
-    cd Maila_docker
-    docker build -t maila-image .
+    # Build maila-base
+    cd maila-base/
+    docker build -t maila-base .
+    
+    # Build maila-base
+    cd ../maila-dev/
+    docker build -t maila-dev .
     ```
 
     *Note: Please be sure to have enough disk space left. Building this image needs around 2GB of free space. The successfully built image has a size of 2GB*
 
-4. **Run (create+start) Docker Container**
+## Run the containers
 
-   * `--rm` Automatically remove the container when it exits
+Once the images are downloaded on your local machine we can run the containers as user with:
 
-   * `-it` sets it as interactable and using stdin and stdout
-
-   * `--name` sets the name of the container
-
-   * `--h` sets the hostname of the container
-
-   * `--mount` mount a volume, src=host/path, dst=container/path
-
-   * `-v /tmp/.X11-unix:/tmp/.X11-unix` sets a volume to share the x server
-
-   * `--env DISPLAY=$DISPLAY` sets an environment var for GUI
-
-   * `-p` sets a port forwarding (for SSH e.g)
-
-    Start as root:
-
-    ``` bash
-    docker run --rm -it \
-        --name maila-container -h maila \
-        --user 0 \
-        --mount type=bind,src="$PWD"/../,dst=/mailamaca \
-        -v /tmp/.X11-unix:/tmp/.X11-unix \
-        --env DISPLAY=$DISPLAY \
-        -p 2222:22 \
-        maila-image
-    ```
-
-    Start as user:
-
-    ``` bash
-    docker run --rm -it \
-        --name maila-container -h maila \
-        --user "$(id -u):$(id -g)" \
-        --mount type=bind,src="$PWD"/../,dst=/mailamaca \
-        -v /tmp/.X11-unix:/tmp/.X11-unix \
-        --env DISPLAY=$DISPLAY \
-        -p 2222:22 \
-        maila-image
-    ```
-
-    this will be the main terminal windows, when this closes the container colses and all things made in it will be lost!
-
-6. **Open a new terminal connected to the container (AS USER)**
-
-    ``` bash
-    docker exec -it maila-container bash
-    ```
-
-7. **Open a new terminal connected to the container (AS ROOT)**
-
-    ``` bash
-    docker exec -u 0 -it maila-container bash
-    ```
-
-## Visual Studio Code Remote extension
-
-1. **Install ms-vscode-remote.remote-containers**
-
-2. In the VSC console (F1) type "Remote-Containers: Open Folder in COntainer..." or click in the green square in the left-bottom part of VSC and select "Remote-Containers: Open Folder in COntainer..."
-
-3. Select Maila_docker folder
-
-4. Done! It will open the up-folder of Maila_docker inside the container
-
-NOTE: the ```.devcontainer.json``` file contains all the information, it is quite the same as ```docker run```
-
-## SSH
-
-1. **With the container started open a new terminal connected to the container (AS ROOT)**
-
-    ``` bash
-    docker exec -u 0 -it maila-container /usr/sbin/sshd -d
-    ```
-
-2. **Access the Docker Container via SSH (in another host terminal):**
-
-    ```bash
-    ssh root@localhost -p 2222
-    ```
-
-    User | Password
-    -------- | -----
-    root | root
-
-3. **if HOST IDENTIIFATION HAS CHANGED try this command**
-
-   ```bash
-    ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R "[localhost]:2222"
-    ```
-
-    then re-launch the ssh service in the previuous terminal and then re-try to login
-
-## Docker useful commands
-
-### Remove container
-
-1. Get all containers
-
-   ``` bash
-   docker ps -a
-   ```
-
-2. Delete ones
-
-   ``` bash
-   docker rm maila
-   ```
-
-### Remove docker image
-
-1. Get all images
-
-   ``` bash
-   docker images
-   ```
-
-2. Delete ones
-
-   ``` bash
-   docker rmi 27aba35ee129
-   ```
-
-3. Delete dangling images (https://www.projectatomic.io/blog/2015/07/what-are-docker-none-none-images/)
-
-   ``` bash
-   docker rmi $(docker images -f "dangling=true" -q)
-   ```
-
-### Start/Stop of Docker Container
-
-```bash
-docker start -ia <your-docker-container-name>
-docker stop <your-docker-container-name>
-# e.g
-docker start -ia maila-container
-docker stop maila-container
+```shell
+ export IMAGE_NAME=maila-dev
+ docker run --rm -it \
+     --name maila-container -h maila \
+     --user "$(id -u):$(id -g)" \
+     --mount type=bind,src="$PWD"/../,dst=/mailamaca \
+     -v /tmp/.X11-unix:/tmp/.X11-unix \
+     --env DISPLAY=$DISPLAY \
+     -p 2222:22 \
+     ${IMAGE_NAME}
 ```
 
-### Backup container state (NOT THE DATA VOLUME)
+### Connecting from a terminal
 
-1. Create a backup of the container to an image.
+Having a running image it is possible to connect multiple terminal to the running instance:
 
-   ``` bash
-   docker commit -p maila maila/backup:20200720
-   ```
+- `docker exec -it maila-container bash` to connect to the container as user
+- `docker exec -u 0 -it maila-container bash` to connect to the container as root
 
-   Kindly note that this will not cover the data volume. You need to take the backup of data-volume (if any) separately. To know this data-directory (data volume location) of a container, use the command `docker inspect container-name`. You will get a section called “Mounts”. Location mentioned in “Source” is the data volume. You may directly backup this folder(here /site) to get backup of data volume.
+### Connecting using ssh
 
-2. Save image as a tar file
+- `ssh root@localhost -p 2222` connect as root 
+- `ssh snail@localhost -p 2222` connect as user
 
-   ``` bash
-   docker save -o maila_backup_20200720.tar maila/backup:20200720
-   ```
+**Note:** if the Host identification has change try `ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R "[localhost]:2222"`
 
-#### Restore container backup (NOT THE DATA VOLUME)
 
-1. Image can be extracted from backup tar file using the following command
 
-   ``` bash
-   docker load -i /tmp/backup01.tar
-   ```
+## Simple ROS2 working example
 
-2. You can create container from this image using “docker create“. If you had data volume on the original container. You must restore the data volume too and run container with the data volume (docker create -v)
-
-#### Check the version of Docker installed on your machine
-
-<code>    <span class="nv">$ </span>docker --version<span class="nt">--all</span> </code>
-
-####  Download and start a session with ROS2 foxy docker container
-
-<code>    <span class="nv">$ </span>docker run -it ros:foxy <span class="nt">--all</span> </code>
-
-####  List of the images downloaded to your machine
-
-<code>    <span class="nv">$ </span>docker image ls <span class="nt">--all</span>
-
-    REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-    ros                 foxy                4273086f549d        13 days ago         722MB
-</code>
-
-####  run a docker image
-
-<code>    <span class="nv">$ </span>docker run <image ID> <span class="nt">--all</span> </code>
-
-####  List all containers (spawned by the image) that exit after displaying its message.
-
-If it is still running, you do not need the **--all** option
-
-<code>    <span class="nv">$ </span>docker ps --all <span class="nt">--all</span>
-
-    CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                     PORTS               NAMES
-    9867db35d3fe        4273086f549d        "/ros_entrypoint.sh …"   8 minutes ago       Exited (0) 8 minutes ago                       priceless_goldberg
-    42f7c2645a99        ros:foxy            "/ros_entrypoint.sh …"   16 minutes ago      Up 15 minutes                                  competent_feynman
-</code>
-
-## ROS2 turtlesim example
+In order to check if the maila-dev container is working properly you could try to run the following code. If you are able to control the turtle with your keyboard the system is working properly.
 
 ``` bash
 source /opt/ros/foxy/setup.bash
