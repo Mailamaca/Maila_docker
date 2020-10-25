@@ -172,6 +172,7 @@ function clang_alternatives {
 function remove_cc_alternatives {
   info "  |--> Removing all cc current alternatives"
   update-alternatives --remove-all cc 2> /dev/null
+  update-alternatives --remove-all c++ 2> /dev/null  
   info "  |  |--> ${GREEN}${BOLD}OK${NO_COLOR}"
 }
 
