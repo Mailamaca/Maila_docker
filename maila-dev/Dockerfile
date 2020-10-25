@@ -49,6 +49,25 @@ RUN apt-get update -qq && apt-get install -qq \
     ros-${ROS_DISTRO}-ament-clang-format \
     ros-${ROS_DISTRO}-ament-cmake-clang-format && \
     rm -rf /var/lib/apt/lists/*
+    
+# usefull for VPN
+RUN apt-get update -qq && apt-get install -qq \
+    cmake \
+    gcc \
+    g++ \
+    libncurses5-dev \
+    libreadline-dev \
+    libssl-dev \
+    make \
+    zlib1g-dev \
+    isc-dhcp-client && \
+    rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/SoftEtherVPN/SoftEtherVPN_Stable.git
+WORKDIR /SoftEtherVPN_Stable
+RUN cp src/makefiles/linux_32bit.mak Makefile && \
+    make -j4 && \
+    make install
+WORKDIR /
 
 # entrypoint is used to update uid/gid and then run the users command
 COPY scripts/synth-shell/.bashrc /home/snail
