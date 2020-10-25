@@ -6,8 +6,9 @@
 name: buildx maila-dev to DockerHub with cache
 
 on:
+  workflow_dispatch:
   repository_dispatch:
-    types: [build-maila-base-done]
+    types: [build-maila-base-done]  
 
 jobs:
   buildx:
