@@ -6,13 +6,17 @@
 
 To ensure a common, consistent development environment we develop a docker image to run all the packages required from the *Maila* project.
 
-## Content
+## Table of Content
 
-This Docker Image contains the following:
+[TOC]
+
+## Docker images
+
+This repository contain the definition of the following Docker images:
 
 * ***maila-base*** image containing of the core module avoiding heavy visual tool application and physics simulator
 * ***mailla-dev*** image containing the complete set of tools needed to develop application within the Maila project
-* ***coming soon***
+* ***more coming soon***
 
 ## Prerequisites
 
@@ -66,7 +70,7 @@ The simpler way to get the Docker images is from Docker Hub.
     cd /path/to/Maila_docker
     # Build maila-base
     cd maila-base/
-    docker build -t maila-base .
+    docker build -t maila/maila-base .
     
     # Build maila-base
     cd ../maila-dev/
@@ -80,7 +84,7 @@ The simpler way to get the Docker images is from Docker Hub.
 Once the images are downloaded on your local machine we can run the containers as user with:
 
 ```shell
- export IMAGE_NAME=maila-dev
+ export IMAGE_NAME=maila/maila-dev
  docker run --rm -it \
      --name maila-container -h maila \
      --user "$(id -u):$(id -g)" \
@@ -100,10 +104,23 @@ Having a running image it is possible to connect multiple terminal to the runnin
 
 ### Connecting using ssh
 
-- `ssh root@localhost -p 2222` connect as root 
-- `ssh snail@localhost -p 2222` connect as user
+1. Start the ssh service on the running container. `sudo service ssh start`
+2. Connect from an external terminal:
+   - connect using port 2222 of the host machine, since the container port 22 is published on the host port 2222  (`docker run .... -p 2222:22`)
+     - `ssh root@localhost -p 2222` connect as root 
+     - `ssh snail@localhost -p 2222` connect as user
+   - connect directly to the port 22 of the container. To get the IP of the running container`sudo docker inspect -f "{{ .NetworkSettings.IPAddress }}" maila-container`
+     - `ssh root@<container_ip>` connect as root 
+     - `ssh snail@<container_ip>` connect as user
 
 **Note:** if the Host identification has change try `ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R "[localhost]:2222"`
+
+### Access Credentials
+
+| User  | Password |
+| ----- | -------- |
+| root  | root     |
+| snail | snail    |
 
 
 
