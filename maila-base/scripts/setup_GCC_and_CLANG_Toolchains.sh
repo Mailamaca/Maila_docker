@@ -6,9 +6,6 @@
 
 # the material is adapted from https://gist.github.com/bhaskarvk/78a80d9b5d308c84ba43b4a4e599a439
 
-# Set the desired LLVM_VERSION
-LLVM_VERSION=11
-
 # Define style for print
 BOLD='\033[1m'
 RED='\033[0;31m'
@@ -61,30 +58,30 @@ function register_clang_version {
     # NOTE: uncomment the following line for version different from 10 <--
     # wget https://apt.llvm.org/llvm.sh  # avoid to download for stability
     # chmod 777 llvm.sh
-    # ./llvm.sh ${LLVM_VERSION}
+    # ./llvm.sh ${version}
     # rm ./llvm.sh
 
     # Install clang-tools and friends
     # Cland and co
-    apt-get install -yyqq clang-${LLVM_VERSION} \
-      clang-tools-${LLVM_VERSION} \
-      clang-tidy-${LLVM_VERSION} \
-      clang-${LLVM_VERSION}-doc \
-      libclang-common-${LLVM_VERSION}-dev \
-      libclang-${LLVM_VERSION}-dev \
-      libclang1-${LLVM_VERSION} \
-      clang-format-${LLVM_VERSION} \
-      python3-clang-${LLVM_VERSION} \
-      clangd-${LLVM_VERSION}
+    apt-get install -yyqq clang-${version} \
+      clang-tools-${version} \
+      clang-tidy-${version} \
+      clang-${version}-doc \
+      libclang-common-${version}-dev \
+      libclang-${version}-dev \
+      libclang1-${version} \
+      clang-format-${version} \
+      python3-clang-${version} \
+      clangd-${version}
 
     # lldb
-    apt-get install -yyqq lldb-${LLVM_VERSION}
+    apt-get install -yyqq lldb-${version}
     # lld (linder)
-    apt-get install -yyqq lld-${LLVM_VERSION}
+    apt-get install -yyqq lld-${version}
     # libc++
-    apt-get install -yyqq libc++-${LLVM_VERSION}-dev libc++abi-${LLVM_VERSION}-dev
+    apt-get install -yyqq libc++-${version}-dev libc++abi-${version}-dev
     # OpenMP
-    apt-get install -yyqq libomp-${LLVM_VERSION}-dev
+    apt-get install -yyqq libomp-${version}-dev
 
     update-alternatives \
         --install /usr/bin/llvm-config       llvm-config      /usr/bin/llvm-config-${version} ${priority} \
