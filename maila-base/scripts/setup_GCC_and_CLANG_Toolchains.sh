@@ -54,15 +54,14 @@ function register_clang_version {
     # https://gist.github.com/junkdog/70231d6953592cd6f27def59fe19e50d
     local version=$1
     local priority=$2
-    info "  |  |--> Registering clang version ${version} with priority ${priority}"  
+    info "  |  |--> Registering clang version ${version} with priority ${priority} (only version 10 supported! unless uncommented line 61-65)"  
     
     # Basic installation following https://apt.llvm.org/
-    # NOTE: on ubuntu 20.04 this step could be avoided since the package for 
-    # the version 10 are already present in the standard repositories
-    
+
+    # NOTE: uncomment the following line for version different from 10 <--
     # wget https://apt.llvm.org/llvm.sh  # avoid to download for stability
-    chmod 777 llvm.sh
-    ./llvm.sh ${LLVM_VERSION}
+    # chmod 777 llvm.sh
+    # ./llvm.sh ${LLVM_VERSION}
     # rm ./llvm.sh
 
     # Install clang-tools and friends
@@ -167,8 +166,8 @@ function clang_alternatives {
   info "  |--> Registering clang alternatives"
 
   # register_gcc_version <version> <priority>
-  register_clang_version 11 20 
-  #  register_clang_version 10 10
+  # register_clang_version 11 20 
+    register_clang_version 10 10
 
   info "  |--> ${GREEN}${BOLD}OK${NO_COLOR}"   
 }
