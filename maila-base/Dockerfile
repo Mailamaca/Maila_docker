@@ -77,8 +77,18 @@ RUN apt-get update -qq && apt-get install -qq \
     iputils-ping \
     xz-utils \
     openssh-server \
+    lsb-release \ 
+    software-properties-common \
     git && \
     rm -rf /var/lib/apt/lists/*
+
+# Copy installation scripts
+COPY scripts /tmp/install_scripts
+WORKDIR /tmp/install_scripts
+
+# setup GCC and CLANG Toolchains
+RUN chmod +x setup_GCC_and_CLANG_Toolchains.sh
+RUN ./setup_GCC_and_CLANG_Toolchains.sh
 
 # cleanup
 RUN apt-get -qq clean all && \
