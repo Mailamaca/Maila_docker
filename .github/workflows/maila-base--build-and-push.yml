@@ -6,6 +6,7 @@
 name: buildx maila-base to DockerHub with cache
 
 on:
+  workflow_dispatch:  
   push:
     branches: master
 
