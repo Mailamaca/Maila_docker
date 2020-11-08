@@ -3,7 +3,11 @@ FROM maila/maila-base
 LABEL mantainer="Paolo Tomasin <pooltomasin@hotmail.com>"
 LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
 
-RUN apt-get update -qq && apt-get install -qq \
+RUN apt-get update -qq && apt-get upgrade -qq && apt-get install -qq \
+    cmake \
+    gcc \
+    g++ \
+    make \
     sudo && \
     rm -rf /var/lib/apt/lists/*  
 
@@ -25,6 +29,20 @@ RUN mkdir /var/run/sshd && \
     sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
 
+# usefull for VPN
+RUN apt-get update -qq && apt-get install -qq \
+    libncurses5-dev \
+    libreadline-dev \
+    libssl-dev \    
+    zlib1g-dev \
+    isc-dhcp-client && \
+    rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/SoftEtherVPN/SoftEtherVPN_Stable.git
+WORKDIR /SoftEtherVPN_Stable
+RUN cp src/makefiles/linux_32bit.mak Makefile && \
+    make -j4 && \
+    make install
+    
 # install packages
 RUN apt-get update -qq && apt-get install -qq \
     python3-vcstool \
@@ -39,9 +57,17 @@ RUN apt-get update -qq && apt-get install -qq \
 
 # Install ros2 pkg
 RUN apt-get update -qq && apt-get install -qq \
+    ros-${ROS_DISTRO}-ros-ign-bridge \
     ros-${ROS_DISTRO}-diagnostic-msgs \
     ros-${ROS_DISTRO}-diagnostic-updater \
     ros-${ROS_DISTRO}-diagnostic-aggregator && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install ignition Gazebo citadel https://ignitionrobotics.org/docs/citadel/install_ubuntu
+RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list' && \
+    wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add - && \
+    apt-get update -qq && apt-get install -qq \
+    ignition-citadel && \
     rm -rf /var/lib/apt/lists/*
     
 # Tool to format the code
@@ -49,29 +75,8 @@ RUN apt-get update -qq && apt-get install -qq \
     ros-${ROS_DISTRO}-ament-clang-format \
     ros-${ROS_DISTRO}-ament-cmake-clang-format && \
     rm -rf /var/lib/apt/lists/*
-    
-# usefull for VPN
-RUN apt-get update -qq && apt-get install -qq \
-    cmake \
-    gcc \
-    g++ \
-    libncurses5-dev \
-    libreadline-dev \
-    libssl-dev \
-    make \
-    zlib1g-dev \
-    isc-dhcp-client && \
-    rm -rf /var/lib/apt/lists/*
-RUN git clone https://github.com/SoftEtherVPN/SoftEtherVPN_Stable.git
-WORKDIR /SoftEtherVPN_Stable
-RUN cp src/makefiles/linux_32bit.mak Makefile && \
-    make -j4 && \
-    make install
+   
 WORKDIR /
-
-# entrypoint is used to update uid/gid and then run the users command
-COPY scripts/synth-shell/.bashrc /home/snail
-COPY scripts/synth-shell/config /home/snail/.config/synth-shell
 
 # Cleanup
 RUN apt-get -qq clean all && \
