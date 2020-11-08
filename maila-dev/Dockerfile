@@ -38,10 +38,12 @@ RUN apt-get update -qq && apt-get install -qq \
     isc-dhcp-client && \
     rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/SoftEtherVPN/SoftEtherVPN_Stable.git
-WORKDIR /SoftEtherVPN_Stable
-RUN cp src/makefiles/linux_32bit.mak Makefile && \
+WORKDIR ./SoftEtherVPN_Stable
+RUN ./configure && \
     make -j4 && \
     make install
+WORKDIR ../
+RUN rm -r ./SoftEtherVPN_Stable\
     
 # install packages
 RUN apt-get update -qq && apt-get install -qq \
