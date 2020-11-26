@@ -3,14 +3,6 @@ FROM maila/maila-base
 LABEL mantainer="Paolo Tomasin <pooltomasin@hotmail.com>"
 LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
 
-RUN apt-get update -qq && apt-get upgrade -qq && apt-get install -qq \
-    cmake \
-    gcc \
-    g++ \
-    make \
-    sudo && \
-    rm -rf /var/lib/apt/lists/*  
-
 # create std user named snail
 RUN useradd --create-home -ms /bin/bash snail
 RUN usermod -aG sudo snail
@@ -30,55 +22,54 @@ RUN mkdir /var/run/sshd && \
     sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
 
 # usefull for VPN
-RUN apt-get update -qq && apt-get install -qq \
-    libncurses5-dev \
-    libreadline-dev \
-    libssl-dev \    
-    zlib1g-dev \
-    isc-dhcp-client && \
-    rm -rf /var/lib/apt/lists/*
-RUN git clone https://github.com/SoftEtherVPN/SoftEtherVPN_Stable.git
-WORKDIR ./SoftEtherVPN_Stable
-RUN ./configure && \
-    make -j4 && \
-    make install
-WORKDIR ../
-RUN rm -r ./SoftEtherVPN_Stable\
-    
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -qq \
+    && apt-get install -qq \
+        libncurses5-dev \
+        libreadline-dev \
+        libssl-dev \
+        zlib1g-dev \
+        isc-dhcp-client \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+ENV DEBIAN_FRONTEND=
+
+RUN cd /tmp/ \
+    && wget https://github.com/SoftEtherVPN/SoftEtherVPN_Stable/archive/ec3d052e218281dc1aa734f1bf84cf42127744aa.zip \
+    && unzip ec3d052e218281dc1aa734f1bf84cf42127744aa.zip \
+    && cd ./SoftEtherVPN_Stable-ec3d052e218281dc1aa734f1bf84cf42127744aa \
+    && ./configure && make -j4 && make install \
+    && cd .. && rm -r ./SoftEtherVPN_Stable* ec3d052e2*
+
 # install packages
-RUN apt-get update -qq && apt-get install -qq \
-    python3-vcstool \
-    libwiringpi-dev \
-    libgps-dev \
-    gpsd \
-    gpsd-clients \
-    fonts-powerline \
-    libbluetooth-dev \
-    libcwiid-dev && \
-    rm -rf /var/lib/apt/lists/*    
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -qq \
+    && apt-get install -qq \
+        libbluetooth-dev \
+        python3-vcstool \
+        libwiringpi-dev \
+        libcwiid-dev \
+        libgps-dev \
+        gpsd-clients \
+        gpsd \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+ENV DEBIAN_FRONTEND=
 
 # Install ros2 pkg
-RUN apt-get update -qq && apt-get install -qq \
-    ros-${ROS_DISTRO}-ros-ign-bridge \
-    ros-${ROS_DISTRO}-diagnostic-msgs \
-    ros-${ROS_DISTRO}-diagnostic-updater \
-    ros-${ROS_DISTRO}-diagnostic-aggregator && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install ignition Gazebo citadel https://ignitionrobotics.org/docs/citadel/install_ubuntu
-RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list' && \
-    wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add - && \
-    apt-get update -qq && apt-get install -qq \
-    ignition-citadel && \
-    rm -rf /var/lib/apt/lists/*
-    
-# Tool to format the code
-RUN apt-get update -qq && apt-get install -qq \
-    ros-${ROS_DISTRO}-ament-clang-format \
-    ros-${ROS_DISTRO}-ament-cmake-clang-format && \
-    rm -rf /var/lib/apt/lists/*
-   
-WORKDIR /
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -qq \
+    && apt-get install -qq \
+        ros-${ROS_DISTRO}-ros-ign \
+        ros-${ROS_DISTRO}-ros-ign-bridge \
+        ros-${ROS_DISTRO}-diagnostic-msgs \
+        ros-${ROS_DISTRO}-diagnostic-updater \
+        ros-${ROS_DISTRO}-diagnostic-aggregator \
+        ros-${ROS_DISTRO}-ament-clang-format \
+        ros-${ROS_DISTRO}-ament-cmake-clang-format \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+ENV DEBIAN_FRONTEND=
 
 # Cleanup
 RUN apt-get -qq clean all && \
@@ -87,12 +78,10 @@ RUN apt-get -qq clean all && \
     rm -r -f /var/tmp/* && \
     rm -r -f /var/lib/apt/lists/*
 
-# setup entrypoint
-COPY ./entrypoint.sh /
-
-WORKDIR /home/snail
+# Set working dir
+RUN mkdir -p /home/snail/workspace
+WORKDIR /home/snail/workspace
 USER snail
-ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
 
 
