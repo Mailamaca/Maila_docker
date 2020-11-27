@@ -1,5 +1,5 @@
 # Ubuntu 20.04 with nvidia opengl support for ignition gazebo
-FROM nvidia/opengl:1.2-glvnd-devel-ubuntu20.04
+FROM ubuntu:20.04
 
 LABEL mantainer="Paolo Tomasin <pooltomasin@hotmail.com>"
 LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
@@ -17,7 +17,7 @@ ENV ROS_DISTRO foxy
 # install packages
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq \
-    && apt-get install -qq \
+    && apt-get -y install -qq --no-install-recommends \
         software-properties-common \
         openssh-server \
         lsb-release \
@@ -26,24 +26,27 @@ RUN apt-get update -qq \
         locales \
         tzdata \
         gnupg2 \
-        curl \
         cmake \
+        unzip \ 
+        curl \               
         make \
         nano \
         wget \
         less \
         htop \
         sudo \
-        git \
-    && apt-get clean \
+        git \        
+    # Clean up
+    && apt-get autoremove -y \
+    && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=
 
 # setup timezone
-RUN echo 'Etc/UTC' > /etc/timezone && \
-    ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
-    locale-gen en_US en_US.UTF-8 && \
-    update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+RUN echo 'Etc/UTC' > /etc/timezone \
+    && ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime \
+    && locale-gen en_US en_US.UTF-8 \
+    && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
@@ -54,42 +57,54 @@ RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt
 # install ros2 packages
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq \
-    && apt-get install -qq \
+    && apt-get -y install -qq --no-install-recommends \
         ros-foxy-desktop \
-    && apt-get clean \
+    # Clean up
+    && apt-get autoremove -y \
+    && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=
 
 # install colcon
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update -qq && apt-get install -qq \
+RUN apt-get update -qq && apt-get -y install -qq --no-install-recommends  \
     build-essential \
     cmake \
-    python3-colcon-common-extensions && \
-    rm -rf /var/lib/apt/lists/*
+    python3-colcon-common-extensions \
+    # Clean up
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=
 
 # Install argcomplete
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update -qq && apt-get install -qq \
-    python3-pip && \
-    rm -rf /var/lib/apt/lists/* && \
-    pip3 install -U argcomplete
+RUN apt-get update -qq && apt-get -y install -qq --no-install-recommends \
+      python3-pip \
+    # Clean up
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install -U argcomplete
 ENV DEBIAN_FRONTEND=
 
 # install Fast-RTPS dependencies
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update -qq && apt-get install -qq \
-    libasio-dev \
-    libtinyxml2-dev && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update -qq && apt-get -y install -qq --no-install-recommends \
+      libasio-dev \
+      libtinyxml2-dev \
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=
 
 # install cyclone DDS
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update -qq && apt-get install -qq \
-    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update -qq && apt-get -y install -qq --no-install-recommends \
+      ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV DEBIAN_FRONTEND=
 
@@ -105,11 +120,14 @@ ENV DEBIAN_FRONTEND=
 
 # cleanup
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get -qq clean all && \
-    rm -r -f /tmp/* && \
-    rm -r -f /dockerFiles/* && \
-    rm -r -f /var/tmp/* && \
-    rm -r -f /var/lib/apt/lists/*
+RUN apt-get -qq clean all \
+    && rm -rf /tmp/* \
+    && rm -rf /dockerFiles/* \
+    && rm -rf /var/tmp/* \
+    && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=
+
+# Switch back to dialog for any ad-hoc use of apt-get
+ENV DEBIAN_FRONTEND=dialog
 
 CMD ["bash"]

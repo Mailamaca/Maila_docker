@@ -24,13 +24,15 @@ RUN mkdir /var/run/sshd && \
 # usefull for VPN
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq \
-    && apt-get install -qq \
+    && apt-get -y install -qq --no-install-recommends \
         libncurses5-dev \
         libreadline-dev \
         libssl-dev \
         zlib1g-dev \
         isc-dhcp-client \
-    && apt-get clean \
+    # Clean up
+    && apt-get autoremove -y \
+    && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=
 
@@ -44,7 +46,7 @@ RUN cd /tmp/ \
 # install packages
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq \
-    && apt-get install -qq \
+    && apt-get -y install -qq --no-install-recommends \
         libbluetooth-dev \
         python3-vcstool \
         libwiringpi-dev \
@@ -52,14 +54,16 @@ RUN apt-get update -qq \
         libgps-dev \
         gpsd-clients \
         gpsd \
-    && apt-get clean \
+    # Clean up
+    && apt-get autoremove -y \
+    && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=
 
 # Install ros2 pkg
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq \
-    && apt-get install -qq \
+    && apt-get -y install -qq --no-install-recommends \
         ros-${ROS_DISTRO}-ros-ign \
         ros-${ROS_DISTRO}-ros-ign-bridge \
         ros-${ROS_DISTRO}-diagnostic-msgs \
@@ -67,21 +71,28 @@ RUN apt-get update -qq \
         ros-${ROS_DISTRO}-diagnostic-aggregator \
         ros-${ROS_DISTRO}-ament-clang-format \
         ros-${ROS_DISTRO}-ament-cmake-clang-format \
-    && apt-get clean \
+    # Clean up
+    && apt-get autoremove -y \
+    && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=
 
 # Cleanup
-RUN apt-get -qq clean all && \
-    rm -r -f /tmp/* && \
-    rm -r -f /dockerFiles/* && \
-    rm -r -f /var/tmp/* && \
-    rm -r -f /var/lib/apt/lists/*
+RUN apt-get autoremove -y \
+    && apt-get -qq clean all \
+    && rm -rf /tmp/* \
+    && rm -rf /dockerFiles/* \
+    && rm -rf /var/tmp/* \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set working dir
 RUN mkdir -p /home/snail/workspace
 WORKDIR /home/snail/workspace
 USER snail
+
+# Switch back to dialog for any ad-hoc use of apt-get
+ENV DEBIAN_FRONTEND=dialog
+
 CMD ["bash"]
 
 
