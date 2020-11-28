@@ -29,10 +29,10 @@ function print_delim() {
 function register_gcc_version {
   local version=$1
   local priority=$2
-  
-  info "  |  |--> Registering gcc version ${version} with priority ${priority}"  
+
+  info "  |  |--> Registering gcc version ${version} with priority ${priority}"
   apt install -yqq "gcc-${version}" "g++-${version}" "gfortran-${version}" "cpp-${version}"
-  
+
   # GCC ${version}.x
   update-alternatives \
         --install /usr/bin/gcc   gcc   "/usr/bin/gcc-${version}"     "${priority}" \
@@ -44,15 +44,15 @@ function register_gcc_version {
         --slave   /usr/bin/gcov gcov "/usr/bin/gcov-${version}"  \
         --slave   /usr/bin/gcov-dump gcov-dump "/usr/bin/gcov-dump-${version}"  \
         --slave   /usr/bin/gcov-tool gcov-tool "/usr/bin/gcov-tool-${version}"
-  
+
 }
 
 function register_clang_version {
     # https://gist.github.com/junkdog/70231d6953592cd6f27def59fe19e50d
     local version=$1
     local priority=$2
-    info "  |  |--> Registering clang version ${version} with priority ${priority} (only version 10 supported! unless uncommented line 61-65)"  
-    
+    info "  |  |--> Registering clang version ${version} with priority ${priority} (only version 10 supported! unless uncommented line 61-65)"
+
     # Basic installation following https://apt.llvm.org/
 
     # NOTE: uncomment the following line for version different from 10 <--
@@ -63,25 +63,31 @@ function register_clang_version {
 
     # Install clang-tools and friends
     # Cland and co
-    apt-get install -yyqq clang-${version} \
-      clang-tools-${version} \
-      clang-tidy-${version} \
-      clang-${version}-doc \
-      libclang-common-${version}-dev \
-      libclang-${version}-dev \
-      libclang1-${version} \
-      clang-format-${version} \
-      python3-clang-${version} \
-      clangd-${version}
+    apt-get install -yyqq \
+      "clang-${version}" \
+      "clang-tools-${version}" \
+      "clang-tidy-${version}" \
+      "clang-${version}-doc" \
+      "libclang-common-${version}-dev" \
+      "libclang-${version}-dev" \
+      "libclang1-${version}" \
+      "clang-format-${version}" \
+      "python3-clang-${version}" \
+      "clangd-${version}"
 
     # lldb
-    apt-get install -yyqq lldb-${version}
+    apt-get install -yyqq \
+      "lldb-${version}"
     # lld (linder)
-    apt-get install -yyqq lld-${version}
+    apt-get install -yyqq \
+      "lld-${version}"
     # libc++
-    apt-get install -yyqq libc++-${version}-dev libc++abi-${version}-dev
+    apt-get install -yyqq \
+      "libc++-${version}-dev" \
+      "libc++abi-${version}-dev"
     # OpenMP
-    apt-get install -yyqq libomp-${version}-dev
+    apt-get install -yyqq \
+      "libomp-${version}-dev"
 
     update-alternatives \
         --install /usr/bin/llvm-config       llvm-config      "/usr/bin/llvm-config-${version}" "${priority}" \
@@ -143,7 +149,7 @@ function gcc_alternatives {
   info "  |  |--> here"
   #add-apt-repository -y ppa:ubuntu-toolchain-r/test 1> /dev/null 2>&1
   #apt update -qq
-  
+
   # register_gcc_version <version> <priority>
   info "  |  |--> here"
   register_gcc_version 9 30
@@ -163,16 +169,16 @@ function clang_alternatives {
   info "  |--> Registering clang alternatives"
 
   # register_gcc_version <version> <priority>
-  # register_clang_version 11 20 
+  # register_clang_version 11 20
     register_clang_version 10 10
 
-  info "  |--> ${GREEN}${BOLD}OK${NO_COLOR}"   
+  info "  |--> ${GREEN}${BOLD}OK${NO_COLOR}"
 }
 
 function remove_cc_alternatives {
   info "  |--> Removing all cc current alternatives"
   update-alternatives --remove-all cc 2> /dev/null
-  update-alternatives --remove-all c++ 2> /dev/null  
+  update-alternatives --remove-all c++ 2> /dev/null
   info "  |  |--> ${GREEN}${BOLD}OK${NO_COLOR}"
 }
 
@@ -180,13 +186,13 @@ function cc_alternatives {
   info "|--> Registering cc alternatives"
   # exit on first error
   set -e
-  info "  |  |-> Registering gcc with priority 20"  
+  info "  |  |-> Registering gcc with priority 20"
   update-alternatives \
         --install /usr/bin/cc   cc   /usr/bin/gcc     20 \
         --slave   /usr/bin/c++ c++ /usr/bin/g++  \
         --slave   /usr/bin/ld ld /usr/bin/x86_64-linux-gnu-ld
 
-  info "  |  |--> Registering clang with priority 30"  
+  info "  |  |--> Registering clang with priority 30"
   update-alternatives \
         --install /usr/bin/cc   cc   /usr/bin/clang     30 \
         --slave   /usr/bin/c++ c++ /usr/bin/clang++  \
@@ -221,7 +227,7 @@ clang_alternatives
 # Setup main alternatives
 cc_alternatives
 
-info "-->${GREEN}${BOLD}DONE${NO_COLOR}<--" 
+info "-->${GREEN}${BOLD}DONE${NO_COLOR}<--"
 apt-get -qq clean all && \
     rm -r -f /tmp/* && \
     rm -r -f /dockerFiles/* && \

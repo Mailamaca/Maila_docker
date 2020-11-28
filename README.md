@@ -14,8 +14,8 @@ To ensure a common, consistent development environment few docker images were cr
 
 This repository contain the definition of the following Docker images:
 
-* ***maila-base*** image containing of the core module avoiding heavy visual tool application and physics simulator
-* ***mailla-dev*** image containing the complete set of tools needed to develop application within the Maila project
+  * ***maila-base*** image containing of the core module avoiding heavy visual tool application and physics simulator
+  * ***mailla-dev*** image containing the complete set of tools needed to develop application within the Maila project
 
 ## Requirements
 
@@ -33,19 +33,19 @@ make build  # build both
 
 **Pushing images on dockerhub:**
 
-* Log into the Docker Hub from the command line
+  * Log into the Docker Hub from the command line
 
-  ```sh
-  docker login --username=yourhubusername
-  ```
+    ```sh
+    docker login --username=yourhubusername
+    ```
 
-* Push the images on dockerhub
+  * Push the images on dockerhub
 
-  ```sh
-  make push_maila_base  # push only maila-base img
-  make push_maila_dev  # push only maila-dev img
-  make push  # push both
-  ```
+    ```sh
+    make push_maila_base  # push only maila-base img
+    make push_maila_dev  # push only maila-dev img
+    make push  # push both
+    ```
 
 **Pulling images from dockerhub:**
 
@@ -86,9 +86,9 @@ ros2 run turtlesim turtle_teleop_key
 
 This Dockerfile is based on the following work:
 
-* Daniel Hochleitner's GitHub Project [ Dani3lSun/docker-db-apex-dev](https://github.com/Dani3lSun/docker-db-apex-dev)
-* https://tuw-cpsg.github.io/tutorials/docker-ros/
-* [Ignition Gazebo Dockerfiles](https://github.com/ignitionrobotics/ign-gazebo/blob/ign-gazebo4/docker/README.md)
+  * Daniel Hochleitner's GitHub Project [ Dani3lSun/docker-db-apex-dev](https://github.com/Dani3lSun/docker-db-apex-dev)
+  * https://tuw-cpsg.github.io/tutorials/docker-ros/
+  * [Ignition Gazebo Dockerfiles](https://github.com/ignitionrobotics/ign-gazebo/blob/ign-gazebo4/docker/README.md)
 
 ## Appendix
 
@@ -100,54 +100,54 @@ Install and configure [Docker](https://www.docker.com/get-started) for your oper
 
 Docker has two available versions: Community Edition (CE) and  Enterprise Edition (EE). In this tutorial, we'll install the CE version.
 
-  1. Remove old versions of Docker (if installed):
+   1. Remove old versions of Docker (if installed):
 
-     ```sh
-     sudo apt-get remove docker docker-engine docker.io
-     ```
+      ```sh
+      sudo apt-get remove docker docker-engine docker.io
+      ```
 
-  2. Install dependencies and keys.
+   2. Install dependencies and keys.
 
-     ```sh
-      sudo apt install curl apt-transport-https ca-certificates curl software-properties-common
+      ```sh
+       sudo apt install curl apt-transport-https ca-certificates curl software-properties-common
 
-      # Add the official GPG key of Docker
-      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-     ```
+       # Add the official GPG key of Docker
+       curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      ```
 
-  3. Setup Docker using 1 of the two options below.
+   3. Setup Docker using 1 of the two options below.
 
-      1. Ubuntu Bionic users
+       1. Ubuntu Bionic users
 
-         ```sh
-          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) edge"
-         ```
+          ```sh
+           sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) edge"
+          ```
 
-      2. Everyone else.
+       2. Everyone else.
 
-         ```sh
-          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-         ```
+          ```sh
+           sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs)  stable"
+          ```
 
-  4. Install Docker
+   4. Install Docker
 
-     ```sh
-      sudo apt-get update && sudo apt-get install docker-ce
-     ```
+      ```sh
+       sudo apt-get update && sudo apt-get install docker-ce
+      ```
 
-  5. Check your Docker installation:
+   5. Check your Docker installation:
 
-     ```sh
-      sudo docker run hello-world
-     ```
+      ```sh
+       sudo docker run hello-world
+      ```
 
-  6. You should see the message `Hello from Docker!` confirming that your installation was successfully completed.
+   6. You should see the message `Hello from Docker!` confirming that your installation was successfully completed.
 
 #### Windows
 
-  1. Install [Docker Desktop for Windows/Mac](https://www.docker.com/products/docker-desktop).
-  2. Right-click on the Docker task bar item, select **Settings/Preferences** and update **Resources > File Sharing** with any locations your source code is kept. See [tips and tricks](https://code.visualstudio.com/docs/remote/troubleshooting#_container-tips) for troubleshooting.
-  3. If you are using WSL 2 on Windows, to enable the [Windows WSL 2 back-end](https://aka.ms/vscode-remote/containers/docker-wsl2): Right-click on the Docker taskbar item and select **Settings**. Check **Use the WSL 2 based engine** and verify your distribution is enabled under **Resources > WSL Integration**.
+   1. Install [Docker Desktop for Windows/Mac](https://www.docker.com/products/docker-desktop).
+   2. Right-click on the Docker task bar item, select **Settings/Preferences** and update **Resources > File Sharing** with any locations your source code is kept. See [tips and tricks](https://code.visualstudio.com/docs/remote/troubleshooting#_container-tips) for troubleshooting.
+   3. If you are using WSL 2 on Windows, to enable the [Windows WSL 2 back-end](https://aka.ms/vscode-remote/containers/docker-wsl2): Right-click on the Docker taskbar item and select **Settings**. Check **Use the WSL 2 based engine** and verify your distribution is enabled under **Resources > WSL Integration**.
 
 ## License
 
