@@ -1,4 +1,4 @@
-FROM maila/maila-base
+FROM maila/maila-base:latest
 
 LABEL mantainer="Paolo Tomasin <pooltomasin@hotmail.com>"
 LABEL mantainer="Valerio Magnago <valerio.magnago@gmail.com>"
@@ -56,13 +56,13 @@ ENV DEBIAN_FRONTEND=
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq \
     && apt-get -y install -qq --no-install-recommends \
-        ros-${ROS_DISTRO}-ros-ign \
-        ros-${ROS_DISTRO}-ros-ign-bridge \
-        ros-${ROS_DISTRO}-diagnostic-msgs \
-        ros-${ROS_DISTRO}-diagnostic-updater \
-        ros-${ROS_DISTRO}-diagnostic-aggregator \
-        ros-${ROS_DISTRO}-ament-clang-format \
-        ros-${ROS_DISTRO}-ament-cmake-clang-format \
+        "ros-${ROS_DISTRO}-ros-ign" \
+        "ros-${ROS_DISTRO}-ros-ign-bridge" \
+        "ros-${ROS_DISTRO}-diagnostic-msgs" \
+        "ros-${ROS_DISTRO}-diagnostic-updater" \
+        "ros-${ROS_DISTRO}-diagnostic-aggregator" \
+        "ros-${ROS_DISTRO}-ament-clang-format" \
+        "ros-${ROS_DISTRO}-ament-cmake-clang-format" \
     # Clean up
     && apt-get autoremove -y \
     && apt-get clean -y \
