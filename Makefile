@@ -51,6 +51,27 @@ build: build_maila_base build_maila_dev
 push: push_maila_base push_maila_dev
 
 push: pull_maila_base pull_maila_dev
+
+run_maila_dev:
+	docker run --rm -it \
+		--name maila-container -h maila \
+		--user "$(id -u):$(id -g)" \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		--env DISPLAY=$DISPLAY \
+		-p 2222:22 \
+		$(ORG)/maila-dev:$(TAG)
+	
+run_maila_base:
+	docker run --rm -it \
+		--name maila-container -h maila \
+		--user "$(id -u):$(id -g)" \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		--env DISPLAY=$DISPLAY \
+		-p 2222:22 \
+		$(ORG)/maila-base:$(TAG)
+
+connect:
+	docker exec -u 0 -it maila-container bash
 	
 all: build push
 
