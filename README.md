@@ -55,59 +55,29 @@ make pull_maila_dev  # pull only maila-dev img
 make pull  # pull both
 ```
 
-## Run the containers
+**Run the containers:**
 
-Once the images are downloaded on your local machine we can run the containers as user with:
-
-```shell
- export IMAGE_NAME=maila/maila-dev
- docker run --rm -it \
-     --name maila-container -h maila \
-     --user "$(id -u):$(id -g)" \
-     --mount type=bind,src="$PWD"/../,dst=/mailamaca \
-     -v /tmp/.X11-unix:/tmp/.X11-unix \
-     --env DISPLAY=$DISPLAY \
-     -p 2222:22 \
-     ${IMAGE_NAME}
+```sh
+make run_maila_base # run the maila base image
+make run_maila_deb  # run the maila dev image
 ```
 
-### Connecting from a terminal
+**Connect to running containers:**
 
-Having a running image it is possible to connect multiple terminal to the running instance:
-
-- `docker exec -it maila-container bash` to connect to the container as user
-- `docker exec -u 0 -it maila-container bash` to connect to the container as root
-
-### Connecting using ssh
-
-1. Start the ssh service on the running container. `sudo service ssh start`
-2. Connect from an external terminal:
-   - connect using port 2222 of the host machine, since the container port 22 is published on the host port 2222  (`docker run .... -p 2222:22`)
-     - `ssh root@localhost -p 2222` connect as root 
-     - `ssh snail@localhost -p 2222` connect as user
-   - connect directly to the port 22 of the container. To get the IP of the running container`sudo docker inspect -f "{{ .NetworkSettings.IPAddress }}" maila-container`
-     - `ssh root@<container_ip>` connect as root 
-     - `ssh snail@<container_ip>` connect as user
-
-**Note:** if the Host identification has change try `ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R "[localhost]:2222"`
-
-### Access Credentials
-
-| User  | Password |
-| ----- | -------- |
-| root  | root     |
-| snail | snail    |
+```sh
+make connect
+```
 
 ## Simple ROS2 working example
 
 In order to check if the maila-dev container is working properly you could try to run the following code. If you are able to control the turtle with your keyboard the system is working properly.
 
 ``` bash
-source /opt/ros/foxy/setup.bash
-printenv | grep -i ROS
+source /opt/ros/foxy/setup.bash # source ros environment
+printenv | grep -i ROS # list the ROS env variables
 apt update
-apt install ros-foxy-turtlesim
-ros2 pkg executables turtlesim
+apt install ros-foxy-turtlesim # install the demo
+ros2 pkg executables turtlesim # list the executables
 ros2 run turtlesim turtlesim_node
 ros2 run turtlesim turtle_teleop_key
 ```
